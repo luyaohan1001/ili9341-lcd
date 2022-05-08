@@ -374,7 +374,7 @@ void ili9341_memory_read();
 /* 8.2.25. Partial Area (30h) */ 
 void ili9341_set_partial_area();
 /* 8.2.26. Vertical Scrolling Definition (33h) */ 
-void ili9341_set_vertical_scrolling_definition(uint16_t top_fixed_area_height, uint16_t vertical_scrolling_area_height, uint16_t bottom_fixed_area_height)
+void ili9341_set_vertical_scrolling_definition(uint16_t top_fixed_area_height, uint16_t vertical_scrolling_area_height, uint16_t bottom_fixed_area_height);
 /* 8.2.27. Tearing Effect Line OFF (34h) */ 
 void ili9341_set_tearing_effect_line_off();
 /* 8.2.28. Tearing Effect Line ON (35h) */ 

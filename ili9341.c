@@ -688,7 +688,7 @@ void ili9341_set_column_address(uint16_t x1, uint16_t x2)
   */
 void ili9341_set_page_address(uint16_t y1, uint16_t y2)
 {
-  uint8_t p_param[4] = { (Vuint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
+  uint8_t p_param[4] = { (uint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
   bus_8080_write_register(0x2B, 4, p_param);
 }
 
@@ -703,36 +703,64 @@ void ili9341_memory_write()
   bus_8080_write_register(0x2C, 0, NULL);
 }
 
-/* 8.2.23. Color Set (2Dh) */ 
+
+/** 
+  * @brief  TODO 8.2.23. Color Set (2Dh) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_color()
 {
 
 }
-/* 8.2.24. Memory Read (2Eh) */ 
+
+/** 
+  * @brief  TODO 8.2.24. Memory Read (2Eh) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_memory_read()
 {
 
 }
-/* 8.2.25. Partial Area (30h) */ 
+
+/** 
+  * @brief  TODO 8.2.25. Partial Area (30h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_partial_area()
 {
   
 }
-/* 8.2.26. Vertical Scrolling Definition (33h) */ 
+
+/** 
+  * @brief  8.2.26. Vertical Scrolling Definition (33h) 
+  * @param  top_fix_area_height No. of lines from top of the Frame Memory and display
+  * @param  vertical_scrolling_area_height No. of lines of the Frame Memory [not the display] from the Vertical Scrolling Start Address
+  * @param  bottom_fix_area_height  No. of lines from Bottom of the Frame Memory and Display
+  * @retval None.
+  */
 void ili9341_set_vertical_scrolling_definition(uint16_t top_fixed_area_height, uint16_t vertical_scrolling_area_height, uint16_t bottom_fixed_area_height)
 {
   uint8_t p_param[6] = {top_fixed_area_height >> 8, top_fixed_area_height & 0xFF,
                         vertical_scrolling_area_height >> 8, vertical_scrolling_area_height & 0xFF,
                         bottom_fixed_area_height >> 8, bottom_fixed_area_height & 0xFF
                        };
-  bus_8080_write_register(0x35, 6, p_param);
+  bus_8080_write_register(0x33, 6, p_param);
 }
 
-/* 8.2.27. Tearing Effect Line OFF (34h) */ 
+
+/** 
+  * @brief  8.2.27. Tearing Effect Line OFF (34h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_tearing_effect_line_off()
 {
 
 }
+
 /**
   * @brief  8.2.28. Tearing Effect Line ON (35h) 
   * @param  None.
@@ -749,18 +777,30 @@ void ili9341_set_tearing_effect_line_on()
   uint8_t p_param[1] = {1 << 0};
   bus_8080_write_register(0x35, 1, p_param);
 }
-/* 8.2.29. Memory Access Control (36h) */
+
+
+/** 
+  * @brief  8.2.29. Memory Access Control (36h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_memory_access_control()
 {
   uint8_t p_param[1] = {0x08};
   bus_8080_write_register(0x36, 1, p_param);
 }
 
-/* 8.2.30. Vertical Scrolling Start Address (37h) */
+
+/** 
+  * @brief  8.2.30. Vertical Scrolling Start Address (37h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_vertical_scrolling_start_address()
 {
 
 }
+
 /**
   * @brief  8.2.31. Idle Mode OFF (38h) 
   * @param  None.
@@ -774,38 +814,74 @@ void ili9341_set_idle_mode_off()
 {
   bus_8080_write_register(0x38, 0, NULL);
 }
-/* 8.2.32. Idle Mode ON (39h) */
+
+
+/** 
+  * @brief  8.2.32. Idle Mode ON (39h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_idle_mode_on()
 {
   bus_8080_write_register(0x39, 0, NULL);
 }
-/* 8.2.33. COLMOD: Pixel Format Set (3Ah) */
+
+
+/** 
+  * @brief  8.2.33. COLMOD: Pixel Format Set (3Ah)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_pixel_format_set()
 {
   uint8_t p_param[1] = {0x55};
   bus_8080_write_register(0x3A, 1, p_param);
 }
 
-/* 8.2.34. Write_Memory_Continue (3Ch) */
+
+
+/** 
+  * @brief  TODO 8.2.34. Write_Memory_Continue (3Ch)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_write_memory_continue()
 {
 
 }
-/* 8.2.35. Read_Memory_Continue (3Eh)*/ 
+
+
+/** 
+  * @brief  TODO 8.2.35. Read_Memory_Continue (3Eh)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_read_memory_continue()
 {
 
 }
-/* 8.2.36. Set_Tear_Scanline (44h)*/ 
+
+/** 
+  * @brief  TODO 8.2.36. Set_Tear_Scanline (44h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_tear_scanline()
 {
 
 }
-/* 8.2.37. Get_Scanline (45h) */ 
+
+
+/** 
+  * @brief  TODO 8.2.37. Get_Scanline (45h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_get_scanline()
 {
 
 }
+
 /**
   * @brief  8.2.38. Write Display Brightness (51h) 
   * @param  None.
@@ -885,22 +961,46 @@ void ili9341_get_CTRL_display(uint8_t* p_read_data)
   serial_print(msg);
   #endif
 }
-/* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
+
+
+
+/** 
+  * @brief  TODO 8.2.42. Write Content Adaptive Brightness Control (55h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_content_adaptive_brightness_control()
 {
 
 }
-/* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
+
+/** 
+  * @brief  TODO 8.2.43. Read Content Adaptive Brightness Control (56h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_get_content_adaptive_brightness_control()
 {
 
 }
-/* 8.2.44. Write CABC Minimum Brightness (5Eh) */ 
+
+
+/** 
+  * @brief  TODO 8.2.44. Write CABC Minimum Brightness (5Eh) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_CABC_minimum_brightness()
 {
 
 }
-/* 8.2.45. Read CABC Minimum Brightness (5Fh) */ 
+
+
+/** 
+  * @brief  TODO 8.2.45. Read CABC Minimum Brightness (5Fh) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_get_CABC_minimum_brightness()
 {
 
@@ -984,82 +1084,39 @@ void ili9341_get_id3(uint8_t* p_read_data)
 }
 
 
+
 /* ILI9341 Extended Registers Access -------------------------------------------------------------------------------------------*/
 /* 8.3.1. RGB Interface Signal Control (B0h) */
-void ili9341_rgb_interface_signal_control()
-{
-
-}
+void ili9341_rgb_interface_signal_control();
 /* 8.3.2. Frame Rate Control (In Normal Mode/Full Colors) (B1h) */
-void ili9341_frame_control_normal_mode()
-{
-
-}
+void ili9341_frame_control_normal_mode();
 /* 8.3.3. Frame Rate Control (In Idle Mode/8 colors) (B2h) */
-void ili9341_frame_control_idle_mode()
-{
-
-}
+void ili9341_frame_control_idle_mode();
 /* 8.3.4. Frame Rate control (In Partial Mode/Full Colors) (B3h) */
-void ili9341_frame_control_partial_mode()
-{
-
-}
+void ili9341_frame_control_partial_mode();
 /* 8.3.5. Display Inversion Control (B4h) */
-void ili9341_display_inversion_control()
-{
-
-}
+void ili9341_display_inversion_control();
 /* 8.3.6. Blanking Porch Control (B5h) */
-void ili9341_blanking_porch_control()
-{
-
-}
+void ili9341_blanking_porch_control();
 /* 8.3.7. Display Function Control (B6h) */
-void ili9341_display_function_control()
-{
-
-}
+void ili9341_display_function_control();
 /* 8.3.8. Entry Mode Set (B7h) */
-void ili9341_entry_mode_set()
-{
-
-}
+void ili9341_entry_mode_set();
 /* 8.3.9. Backlight Control 1 (B8h) */
-void ili9341_backlight_control_1()
-{
-
-}
+void ili9341_backlight_control_1();
 /* 8.3.10. Backlight Control 2 (B9h) */
-void ili9341_backlight_control_2()
-{
-
-}
+void ili9341_backlight_control_2();
 /* 8.3.11. Backlight Control 3 (BAh) */
-void ili9341_backlight_control_3()
-{
-
-}
+void ili9341_backlight_control_3();
 /* 8.3.12. Backlight Control 4 (BBh) */
-void ili9341_backlight_control_4()
-{
-
-}
+void ili9341_backlight_control_4();
 /* 8.3.13. Backlight Control 5 (BCh) */
-void ili9341_backlight_control_5()
-{
-
-}
+void ili9341_backlight_control_5();
 /* 8.3.14. Backlight Control 7 (BEh) */
-void ili9341_backlight_control_7()
-{
-
-}
+void ili9341_backlight_control_7();
 /* 8.3.15. Backlight Control 8 (BFh)*/
-void ili9341_backlight_control_8()
-{
+void ili9341_backlight_control_8();
 
-}
 /* 8.3.16. Power Control 1 (C0h) */ 
 void ili9341_set_power_control1()
 {
@@ -1089,23 +1146,16 @@ void ili9341_set_vcom_control2()
 }
 
 /* 8.3.20. NV Memory Write (D0h) */ 
-void ili9341_nv_memory_write()
-{
-
-}
+void ili9341_nv_memory_write();
 /* 8.3.21. NV Memory Protection Key (D1h) */
-void ili9341_nv_memory_protection_key()
-{
-
-}
+void ili9341_nv_memory_protection_key();
 /* 8.3.22. NV Memory Status Read (D2h) */
-void ili9341_nv_memory_status_read()
-{
+void ili9341_nv_memory_status_read();
 
-}
-/* 8.3.23. Read ID4 (D3h) */
+
 /**
-  * @brief Read LCD Controller Chip (ILI9341) ID. 
+  * @brief 8.3.23. Read ID4 (D3h) 
+  *        Read LCD Controller Chip (ILI9341) ID. 
   * @note  It has been tested that some display modules has all manufacturer/version set to 0.
   *        Thus a more trustworthy way to test 8080 Read is to read the controller IC (ILI9341)'s ID through ID4 register.
   */
@@ -1123,30 +1173,15 @@ void ili9341_get_id4(uint8_t* p_read_data)
 }
 
 /* 8.3.24. Positive Gamma Correction (E0h) */
-void ili9341_positive_gamma_correction()
-{
-
-}
+void ili9341_positive_gamma_correction();
 /* 8.3.25. Negative Gamma Correction (E1h) */
-void ili9341_negative_gamma_correction()
-{
-
-}
+void ili9341_negative_gamma_correction();
 /* 8.3.26. Digital Gamma Control 1 (E2h) */
-void ili9341_digital_gamma_control_1()
-{
-
-}
+void ili9341_digital_gamma_control_1();
 /* 8.3.27. Digital Gamma Control 2(E3h) */
-void ili9341_digital_gamma_control_2()
-{
-
-}
+void ili9341_digital_gamma_control_2();
 /* 8.3.28. Interface Control (F6h)  */
-void ili9341_interface_control()
-{
-
-}
+void ili9341_interface_control();
 
 /* 8.4.1 Power control A (CBh) */
 /** 
@@ -1193,20 +1228,6 @@ void ili9341_enable_3G()
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void ili9341_set_frame_rate_control()
 {
   uint8_t p_param[2] = {0x00, 0x10};
@@ -1236,7 +1257,6 @@ void ili9341_set_pump_ratio_control()
 
 
 
-
 void ili9341_init()
 {
   ili9341_hard_reset();
@@ -1259,12 +1279,6 @@ void ili9341_init()
   ili9341_memory_write();
 }
 
-
-
-
-
-
-
 /**
   * @brief Send to ILI9341 the define area of frame memory where MCU can access.
   * @note  Refer to state diagram in ILI9341 Version V1.11 Section 8.8.20, Column Address Set.
@@ -1275,9 +1289,6 @@ void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
   ili9341_set_page_address(y1, y2);
   ili9341_memory_write();
 }
-
-
-
 
 /**
   * @brief Draw a horizontal line.
