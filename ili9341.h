@@ -1,3 +1,13 @@
+/**
+  ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ********
+  * @file      :     ili9341.h
+  * @author    :     Luyao Han
+  * @email     :     luyaohan1001@gmail.com
+  * @brief     :     C library for ILITEK ili9341 TFTLCD Controller.
+  * @date      :     05-07-2022
+  * Copyright (C) 2022-2122 Luyao Han. The following code may be shared or modified for personal use / non-commercial use only.
+  ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ******** ********  */
+
 /* Macro to prevent recursive inclusion ----------------------------------------------------------------------------------------*/
 #ifndef __ILI9341_H
 #define __ILI9341_H
@@ -11,19 +21,6 @@
 extern UART_HandleTypeDef huart2;
 
 /* TFT Screen Dimension --------------------------------------------------------------------------------------------------------*/
-/**                TFT_PIXEL_H_LENGTH
-	*        ----------------------------------
-	*        -                                -                                
-	*        -                                -
-	*        -                                -
-	*        -                                -
-	*        -                                -  TFT_PIXEL_V_WIDTH
-	*        -                                -
-	*      + -                                -
-	*      x -                                -
-	*      - ----------------------------------
-	*         - y +
-	*/
 #define TFT_PIXEL_H_LENGTH 320
 #define TFT_PIXEL_V_WIDTH  240
 
@@ -160,7 +157,7 @@ static const unsigned char font[] = {
 	0x3A, 0x40, 0x40, 0x20, 0x7A,
 	0x38, 0x54, 0x54, 0x55, 0x59,
 	0x21, 0x55, 0x55, 0x79, 0x41,
-	0x22, 0x54, 0x54, 0x78, 0x42, // a-umlaut
+	0x22, 0x54, 0x54, 0x78, 0x42, 
 	0x21, 0x55, 0x54, 0x78, 0x40,
 	0x20, 0x54, 0x55, 0x79, 0x40,
 	0x0C, 0x1E, 0x52, 0x72, 0x12,
@@ -170,18 +167,18 @@ static const unsigned char font[] = {
 	0x00, 0x00, 0x45, 0x7C, 0x41,
 	0x00, 0x02, 0x45, 0x7D, 0x42,
 	0x00, 0x01, 0x45, 0x7C, 0x40,
-	0x7D, 0x12, 0x11, 0x12, 0x7D, // A-umlaut
+	0x7D, 0x12, 0x11, 0x12, 0x7D,
 	0xF0, 0x28, 0x25, 0x28, 0xF0,
 	0x7C, 0x54, 0x55, 0x45, 0x00,
 	0x20, 0x54, 0x54, 0x7C, 0x54,
 	0x7C, 0x0A, 0x09, 0x7F, 0x49,
 	0x32, 0x49, 0x49, 0x49, 0x32,
-	0x3A, 0x44, 0x44, 0x44, 0x3A, // o-umlaut
+	0x3A, 0x44, 0x44, 0x44, 0x3A, 
 	0x32, 0x4A, 0x48, 0x48, 0x30,
 	0x3A, 0x41, 0x41, 0x21, 0x7A,
 	0x3A, 0x42, 0x40, 0x20, 0x78,
 	0x00, 0x9D, 0xA0, 0xA0, 0x7D,
-	0x3D, 0x42, 0x42, 0x42, 0x3D, // O-umlaut
+	0x3D, 0x42, 0x42, 0x42, 0x3D, 
 	0x3D, 0x40, 0x40, 0x40, 0x3D,
 	0x3C, 0x24, 0xFF, 0x24, 0x24,
 	0x48, 0x7E, 0x49, 0x43, 0x66,
@@ -252,7 +249,7 @@ static const unsigned char font[] = {
 	0x00, 0x00, 0x00, 0xFF, 0xFF,
 	0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
 	0x38, 0x44, 0x44, 0x38, 0x44,
-	0xFC, 0x4A, 0x4A, 0x4A, 0x34, // sharp-s or beta
+	0xFC, 0x4A, 0x4A, 0x4A, 0x34, 
 	0x7E, 0x02, 0x02, 0x06, 0x06,
 	0x02, 0x7E, 0x02, 0x7E, 0x02,
 	0x63, 0x55, 0x49, 0x41, 0x63,
@@ -285,83 +282,193 @@ static const unsigned char font[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+/* @brief utility used for printing debug message through serial UART. */
+extern void serial_print(char* message);
 
 
-/**
-	* @brief utility used for printing debug message through serial UART.
-	*/
-void serial_print(char* message);
-
+/* Function Prototypes -------------------------------------------------------------------------------------------------------*/
 void LCD_RST_1();
 void LCD_RST_0();
+
 void LCD_CS_1();
 void LCD_CS_0();
+
 void LCD_RS_1();
 void LCD_RS_0();
-void LCD_RS_RISING_EDGE();
+
 void LCD_WR_1();
 void LCD_WR_0();
 void LCD_WR_RISING_EDGE();
+
 void LCD_RD_1();
 void LCD_RD_0();
-void LCD_RD_RISING_EDGE();
-void LCD_D2_1();
-void LCD_D2_0();
-void LCD_D3_1();
-void LCD_D3_0();
-void LCD_D4_1();
-void LCD_D4_0();
-void LCD_D5_1();
-void LCD_D5_0();
-void LCD_D6_1();
-void LCD_D6_0();
-void LCD_D7_1();
-void LCD_D7_0();
-void LCD_D0_1();
-void LCD_D0_0();
-void LCD_D1_1();
-void LCD_D1_0();
 
 /* GPIO Layer 8080 Bus ------------------------------------------------------------------------------------------------------*/
 void gpio_configure_8080_datapins_input_mode();
 void gpio_configure_8080_datapins_output_mode();
-uint8_t gpio_8080_read_parallel_datapins();
-void gpio_8080_write_parallel_datapins(uint8_t write_data);
-void gpio_8080_write_command(uint8_t cmd);
-void gpio_8080_write_data(uint8_t data);
-void gpio_8080_read_data(uint8_t* p_read_data, uint8_t length);
+uint8_t bus_8080_read_parallel_datapins();
+void bus_8080_write_parallel_datapins(uint8_t write_data);
+void bus_8080_write_command(uint8_t cmd);
+void bus_8080_write_data(uint8_t data);
+void bus_8080_read_data(uint8_t* p_read_data, uint8_t length);
 
 
 
 /* ILI9341 Register Access Layer -------------------------------------------------------------------------------------------*/
-void ili9341_set_power_control_a();
-void ili9341_set_power_control_b();
-void ili9341_set_driver_timing_control_a();
-void ili9341_set_driver_timing_control_b();
-void ili9341_set_poweron_sequence_control_b();
-void ili9341_set_pump_ratio_control();
-void ili9341_set_power_control1();
-void ili9341_set_power_control2();
-void ili9341_set_vcom_control1();
-void ili9341_set_vcom_control2();
-void ili9341_set_memory_access_control();
-void ili9341_set_pixel_format_set();
-void ili9341_set_frame_rate_control();
-void ili9341_set_display_function_control();
+/* 8.2.1. NOP (00h) */
+void ili9341_nop();
+/* 8.2.2. Software Reset (01h) */ 
+void ili9341_soft_reset();
+/* 8.2.3. Read display identification information (04h) */ 
+void ili9341_read_display_identification(uint8_t* p_read_data);
+/* 8.2.4. Read Display Status (09h) */ 
+void ili9341_read_display_status(uint8_t* p_read_data);
+/* 8.2.5. Read Display Power Mode (0Ah) */ 
+void ili9341_read_display_power_mode(uint8_t* p_read_data);
+/* 8.2.6. Read Display MADCTL (0Bh) */ 
+void ili9341_read_display_MADCTL(uint8_t* p_read_data);
+/* 8.2.7. Read Display Pixel Format (0Ch) */ 
+void ili9341_read_display_pixel_format(uint8_t* p_read_data);
+/* 8.2.8. Read Display Image Format (0Dh) */ 
+void ili9341_read_display_image_format(uint8_t* p_read_data);
+/* 8.2.9. Read Display Signal Mode (0Eh) */ 
+void ili9341_read_display_signal_mode(uint8_t* p_read_data);
+/* 8.2.10. Read Display Self-Diagnostic Result (0Fh) */ 
+void ili9341_read_display_diagnostic_result(uint8_t* p_read_data);
+
+/* 8.2.11. Enter Sleep Mode (10h) */ 
+void ili9341_enter_sleep_mode();
+/* 8.2.12. Sleep Out (11h) */ 
 void ili9341_exit_sleep_mode();
+/* 8.2.13. Partial Mode ON (12h)*/ 
+void ili9341_partial_mode_on();
+/* 8.2.14. Normal Display Mode ON (13h)*/ 
+void ili9341_normal_mode_on();
+/* 8.2.15. Display Inversion OFF (20h)*/ 
+void ili9341_display_inversion_off();
+/* 8.2.15. Display Inversion OFF (20h) */ 
+void ili9341_display_inversion_on();
+/* 8.2.17. Gamma Set (26h) */ 
+void ili9341_gamma_set();
+/* 8.2.18. Display OFF (28h) */ 
+void ili9341_set_display_off();
+/* 8.2.19. Display ON (29h) */ 
 void ili9341_set_display_on();
-void ili9341_set_display_brightness();
+/* 8.2.20. Column Address Set (2Ah) */ 
+void ili9341_set_column_address(uint16_t x1, uint16_t x2);
+/* 8.2.21. Page Address Set (2Bh) */ 
+void ili9341_set_page_address(uint16_t y1, uint16_t y2);
+/* 8.2.22. Memory Write (2Ch) */ 
 void ili9341_memory_write();
+/* 8.2.23. Color Set (2Dh) */ 
+void ili9341_set_color();
+/* 8.2.24. Memory Read (2Eh) */ 
+void ili9341_memory_read();
+/* 8.2.25. Partial Area (30h) */ 
+void ili9341_partial_area();
+/* 8.2.26. Vertical Scrolling Definition (33h) */ 
+void ili9341_vertical_scrolling_definition();
+/* 8.2.27. Tearing Effect Line OFF (34h) */ 
+void ili9341_tearing_effect_line_off();
+/* 8.2.28. Tearing Effect Line ON (35h) */ 
+void ili9341_tearing_effect_line_on();
+/* 8.2.29. Memory Access Control (36h) */
+void ili9341_set_memory_access_control();
+/* 8.2.30. Vertical Scrolling Start Address (37h) */
+void ili9341_vertical_scrolling_start_address();
+/* 8.2.31. Idle Mode OFF (38h) */
+void ili9341_idle_mode_off();
+/* 8.2.32. Idle Mode ON (39h) */
+void ili9341_idle_mode_on();
+/* 8.2.33. COLMOD: Pixel Format Set (3Ah) */
+void ili9341_set_pixel_format_set();
+/* 8.2.34. Write_Memory_Continue (3Ch) */
+void ili9341_write_memory_continue();
+/* 8.2.35. Read_Memory_Continue (3Eh)*/ 
+void ili9341_read_memory_continue();
+/* 8.2.36. Set_Tear_Scanline (44h)*/ 
+void ili9341_set_tear_scanline();
+/* 8.2.37. Get_Scanline (45h) */ 
+void ili9341_get_scanline();
+/* 8.2.38. Write Display Brightness (51h) */ 
+void ili9341_set_display_brightness();
+/* 8.2.39. Read Display Brightness (52h) */ 
+void ili9341_get_display_brightness();
+/* 8.2.40. Write CTRL Display (53h) */ 
+void ili9341_set_CTRL_display();
+/* 8.2.41. Read CTRL Display (54h) */ 
+void ili9341_get_CTRL_display();
+void ili9341_set_content_adaptive_brightness_control();
+/* 8.2.44. Write CABC Minimum Brightness (5Eh) */ 
+void ili9341_set_CABC_minimum_brightness();
+/* 8.2.45. Read CABC Minimum Brightness (5Fh) */ 
+void ili9341_get_CABC_minimum_brightness();
+/* 8.2.46. Read ID1 (DAh) */ 
+void ili9341_read_id1();
+/* 8.2.47. Read ID2 (DBh) */ 
+void ili9341_read_id2();
+/* 8.2.48. Read ID3 (DCh) */ 
+void ili9341_read_id3();
+
+
+
+/* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
+/* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
+
+
+
+
+
+
+
+void ili9341_set_power_control_a();
+/* */ 
+void ili9341_set_power_control_b();
+/* */ 
+void ili9341_set_driver_timing_control_a();
+/* */ 
+void ili9341_set_driver_timing_control_b();
+/* */ 
+void ili9341_set_poweron_sequence_control_b();
+/* */ 
+void ili9341_set_pump_ratio_control();
+/* */ 
+void ili9341_set_power_control1();
+/* */ 
+void ili9341_set_power_control2();
+/* */ 
+void ili9341_set_vcom_control1();
+/* */ 
+void ili9341_set_vcom_control2();
+
+
+/* */ 
+void ili9341_set_frame_rate_control();
+/* */ 
+void ili9341_set_display_function_control();
+
+
+
+
+/* */ 
 void ili9341_hard_reset();
+/* */ 
 void ili9341_get_id4(uint8_t* p_read_data);
 
 
-void ili9341_set_column_address(uint16_t x1, uint16_t x2);
-void ili9341_set_page_address(uint16_t y1, uint16_t y2);
+
+/* */ 
 void ili9341_memory_write();
+/* */ 
 void ili9341_init();
 
+/* */ 
 void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2);
+
+
+
+
+
 
 /* Abstraction Layer: LCD Drawing / Plotting Methods ------------------------------------------------------------*/
 void lcd_draw_horizontal_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t color);
@@ -373,8 +480,6 @@ void lcd_plot_char(int16_t x, int16_t y, unsigned char c,uint16_t color, uint16_
 void lcd_draw_dot(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t dot_color);
 void lcd_set_rotation(uint8_t orientation);
 void lcd_write_message(char* message, uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint8_t size, uint16_t text_color, uint16_t text_bg_color);
-
-
 
 
 #endif
