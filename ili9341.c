@@ -243,31 +243,97 @@ void bus_8080_write_parallel_datapins(uint8_t write_data)
   GPIOC->ODR |= ((write_data & 0x02) << 6);
 }
 
+
 /**
-  *
-  *
+  * @brief  Write to devie register through 8080 bus. 
+  * @param  target_register Command byte. Essentially the target register to write.
+  * @param  p_param Pointer to an array containing parameters to write to the targert register.
+  * @param  length Number of parameters in bytes.
+  * @retval None.
+  * @note   Parallel 8080 Bus Time Write Sequence:
+  *         CS  ````\_________________________________________________________________/````
+  *         RS  ``````\_______________/````````````````````````````````````````````````````
+  *         WR  ____________________/_________________/________________/______________/````
+  *         RD  ```````````````````````````````````````````````````````````````````````````
+  *         D[7:0]       | COMMAND |    | PARAMETER |    | PARAMETER |   | PARAMETER |
+  *         ILI9341                 read              read              read          read 
+  *         MCU             write            write           write           write
+  *        
+  *         RS Stands for Register Select. It is equvilent to D/C (DCX) pin in ili9341 datasheet.
+  *           When RS = 0, ili9341 interpret D[7:0] as command.
+  *           When RS = 1, ili9341 interpret D[7:0] as data. 
+  *         RD Read Line always high indicating read is inactive. 
+  *         WR Write Line needs to show rising edge every time data is already sent on D[7:0],
+  *           ILI9341 will read data on the WR rising edge. 
   */
-void bus_8080_write_register(uint8_t target_register, uint8_t* p_param, uint8_t length)
+  
+void bus_8080_write_register(uint8_t target_register, uint8_t length, uint8_t* p_param)
 {
-  /* Chip Select */
-  LCD_CS_0();
+  /* Write command byte (target register) */
+  LCD_CS_0();  /* Chip Select */
+  LCD_RS_0();  /* RS (Data / Command) = 0, selecting command*/
+  LCD_RD_1();  /* READ = 1. Read line inactive. */
+  gpio_configure_8080_datapins_output_mode(); /* Configure D7-D0 GPIO output mode */
+  bus_8080_write_parallel_datapins(target_register); /* Write target register on D7-D0. */
+  LCD_WR_RISING_EDGE(); /* Validate the byte on WRITE rising edge. */
 
-  LCD_RS_0();  
-  LCD_RD_1();
-  /* Write data to data bus D7-D0. */  
-  gpio_configure_8080_datapins_output_mode();
-  bus_8080_write_parallel_datapins(target_register);
-  LCD_WR_RISING_EDGE();
-
-  /* De-select Chip. */
+  LCD_RS_1();   /* RS (Data / Command Selection) = 1, selecting data. */
+  /* Iterate through each parameters. */ 
   for (int i = 0; i < length; ++i)
   {
-    LCD_RS_1();  
-    /* LCD_RD_1(); */
-    /* gpio_configure_8080_datapins_output_mode(); */
+    // LCD_RD_1(); /* already set above */
+    // gpio_configure_8080_datapins_output_mode();  /* already set above */
     bus_8080_write_parallel_datapins(p_param[i]);
-    LCD_WR_RISING_EDGE();
-    
+    LCD_WR_RISING_EDGE(); /* Validate the byte on WRITE rising edge. */
+  }
+  LCD_CS_1(); /* De-select Chip. */
+}
+
+
+/**
+  * @brief  Read device register value from 8080 bus. 
+  * @param  target_register Command byte. Essentially the target register to write.
+  * @param  length Number of parameters in bytes.
+  * @param  p_param Pointer to an array containing read data from target device.
+  * @retval None.
+  * @note   Parallel 8080 Bus Time Write Sequence:
+  *         CS  ````\_________________________________________________________________/````
+  *         RS  ``````\_______________/````````````````````````````````````````````````````
+  *         WR  ____________________/``````````````````````````````````````````````````````
+  *         RD  ``````````````````````````___________/````````````````__/``````````````_/``
+  *         D[7:0]       | COMMAND |    | PARAMETER |    | PARAMETER |   | PARAMETER |
+  *         ILI9341                 read  write            write           write
+  *         MCU             write                read               read           read
+  *         
+  *         RS Stands for Register Select. It is equvilent to D/C (DCX) pin in ili9341 datasheet.
+  *           When RS = 0, ili9341 interpret D[7:0] as command.
+  *           When RS = 1, ili9341 interpret D[7:0] as data. 
+  *         RD Read Line needs to pull rising edge by the MCU every time data prepared by ili9341
+  *           has been consumed by the MCU.
+  *         WR Write Line turns high once the MCU has written the command byte. 
+  *           The MCU enters read mode and consumes data prepared by ili9341 on D[7:0].
+  */
+void bus_8080_read_register(uint8_t target_register, uint8_t* p_read_data, uint8_t length)
+{
+  
+  /* Write command byte (target register) */
+  LCD_CS_0(); /* Chip Select */
+  LCD_RS_0();  
+  LCD_RD_1();
+  
+  gpio_configure_8080_datapins_output_mode();
+  bus_8080_write_parallel_datapins(target_register); /* Write data to data bus D7-D0. */  
+  LCD_WR_RISING_EDGE();
+
+  /* Set Pins for 8080 parallel bus read mode. */
+  LCD_RS_1();  
+  LCD_WR_1();
+  gpio_configure_8080_datapins_input_mode();
+  for (int i = 0; i < length; ++i)
+  {
+    LCD_RD_0();
+    p_read_data[i] = bus_8080_read_parallel_datapins();
+    LCD_RD_1();
   }
   LCD_CS_1();
 }
@@ -337,12 +403,12 @@ void ili9341_hard_reset()
 /* 8.2.1. NOP (00h) */
 void ili9341_nop()
 {
-
+  bus_8080_write_register(0x00, 0, NULL);
 }
 /* 8.2.2. Software Reset (01h) */ 
 void ili9341_soft_reset()
 {
-
+  bus_8080_write_register(0x01, 0, NULL);
 }
 /* 8.2.3. Read display identification information (04h) */ 
 void ili9341_read_display_identification(uint8_t* p_read_data)
@@ -393,7 +459,7 @@ void ili9341_enter_sleep_mode()
 /* 8.2.12. Sleep Out (11h) */ 
 void ili9341_exit_sleep_mode()
 {
-  bus_8080_write_register(0x11, NULL, 0);
+  bus_8080_write_register(0x11, 0, NULL);
   HAL_Delay(120);             //必须120ms的延迟
 }
 
@@ -433,7 +499,7 @@ void ili9341_set_gamma()
   */
 void ili9341_set_display_off()
 {
-  bus_8080_write_register(0x28, NULL, 0);
+  bus_8080_write_register(0x28, 0, NULL);
 }
 
 /* 8.2.19. Display ON (29h) */ 
@@ -447,7 +513,7 @@ void ili9341_set_display_off()
   */
 void ili9341_set_display_on()
 {
-  bus_8080_write_register(0x29, NULL, 0);
+  bus_8080_write_register(0x29, 0, NULL);
 }
 
 /* 8.2.20. Column Address Set (2Ah) */ 
@@ -455,7 +521,7 @@ void ili9341_set_column_address(uint16_t x1, uint16_t x2)
 {
 
   uint8_t p_param[4] = { (uint8_t)(x1 >> 8), (uint8_t)x1, (uint8_t)(x2 >> 8), (uint8_t)x2};
-  bus_8080_write_register(0x2A, p_param, 4);
+  bus_8080_write_register(0x2A, 4, p_param);
 }
 
 /* 8.2.21. Page Address Set (2Bh) */ 
@@ -463,13 +529,13 @@ void ili9341_set_page_address(uint16_t y1, uint16_t y2)
 {
 
   uint8_t p_param[4] = { (uint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
-  bus_8080_write_register(0x2B, p_param, 4);
+  bus_8080_write_register(0x2B, 4, p_param);
 }
 
 /* 8.2.22. Memory Write (2Ch) */ 
 void ili9341_memory_write()
 {
-  bus_8080_write_register(0x2C, NULL, 0);
+  bus_8080_write_register(0x2C, 0, NULL);
 }
 
 /* 8.2.23. Color Set (2Dh) */ 
@@ -506,7 +572,7 @@ void ili9341_tearing_effect_line_on()
 void ili9341_set_memory_access_control()
 {
   uint8_t p_param[1] = {0x08};
-  bus_8080_write_register(0x36, p_param, 1);
+  bus_8080_write_register(0x36, 1, p_param);
 }
 
 /* 8.2.30. Vertical Scrolling Start Address (37h) */
@@ -528,7 +594,7 @@ void ili9341_idle_mode_on()
 void ili9341_set_pixel_format_set()
 {
   uint8_t p_param[1] = {0x55};
-  bus_8080_write_register(0x3A, p_param, 1);
+  bus_8080_write_register(0x3A, 1, p_param);
 }
 
 /* 8.2.34. Write_Memory_Continue (3Ch) */
@@ -688,28 +754,28 @@ void ili9341_backlight_control_8()
 void ili9341_set_power_control1()
 {
   uint8_t p_param[1] = {0x23};
-  bus_8080_write_register(0xC0, p_param, 1);
+  bus_8080_write_register(0xC0, 1, p_param);
 }
 
 /* 8.3.17. Power Control 2 (C1h) */ 
 void ili9341_set_power_control2()
 {
   uint8_t p_param[1] = {0x10};
-  bus_8080_write_register(0xC1, p_param, 1);
+  bus_8080_write_register(0xC1, 1, p_param);
 }
 
 /* 8.3.18. VCOM Control 1(C5h) */ 
 void ili9341_set_vcom_control1()
 {
   uint8_t p_param[2] = {0x3E, 0x28};
-  bus_8080_write_register(0xC5, p_param, 2);
+  bus_8080_write_register(0xC5, 2, p_param);
 }
 
 /* 8.3.19. VCOM Control 2(C7h) */ 
 void ili9341_set_vcom_control2()
 {
   uint8_t p_param[1] = {0x86};
-  bus_8080_write_register(0xC7, p_param, 1);
+  bus_8080_write_register(0xC7, 1, p_param);
 }
 
 /* 8.3.20. NV Memory Write (D0h) */ 
@@ -779,21 +845,21 @@ void ili9341_set_power_control_a()
 {
   /* Vcore = 1.6V DDVDH = 5.6V. */
   uint8_t p_param[5] = {0x39, 0x2C, 0x00, 0x34, 0x02};
-  bus_8080_write_register(0xCB, p_param, 5);
+  bus_8080_write_register(0xCB, 5, p_param);
 }
 
 /* 8.4.2 Power control B (CFh) */ 
 void ili9341_set_power_control_b()
 {
   uint8_t p_param[3] = {0x00, 0xC1, 0x30};
-  bus_8080_write_register(0xCF, p_param, 3);
+  bus_8080_write_register(0xCF, 3, p_param);
 }
 
 /* 8.4.3 Driver timing control A (E8h) */ 
 void ili9341_set_driver_timing_control_a()
 {
   uint8_t p_param[3] = {0x85, 0x00, 0x78};
-  bus_8080_write_register(0xE8, p_param, 3);
+  bus_8080_write_register(0xE8, 3, p_param);
 }
 
 
@@ -802,7 +868,7 @@ void ili9341_set_driver_timing_control_b()
 {
 
   uint8_t p_param[2] = {0x00, 0x00};
-  bus_8080_write_register(0xEA, p_param, 2);
+  bus_8080_write_register(0xEA, 2, p_param);
 }
 
 /* 8.4.6 Power on sequence control (EDh) */ 
@@ -833,13 +899,13 @@ void ili9341_enable_3G()
 void ili9341_set_frame_rate_control()
 {
   uint8_t p_param[2] = {0x00, 0x10};
-  bus_8080_write_register(0xB1, p_param, 2);
+  bus_8080_write_register(0xB1, 2, p_param);
 }
 
 void ili9341_set_display_function_control()
 {
   uint8_t p_param[3] = {0x08, 0x82, 0x27};
-  bus_8080_write_register(0xB6, p_param, 3);
+  bus_8080_write_register(0xB6, 3, p_param);
 }
 
 
@@ -868,14 +934,14 @@ void ili9341_set_display_function_control()
 void ili9341_set_poweron_sequence_control_b()
 {
   uint8_t p_param[4] = {0x64, 0x03, 0x12, 0x81};
-  bus_8080_write_register(0xED, p_param, 4);
+  bus_8080_write_register(0xED, 4, p_param);
 }
 
 /**/
 void ili9341_set_pump_ratio_control()
 {
   uint8_t p_param[1] = {0x20};
-  bus_8080_write_register(0xF7, p_param, 1);
+  bus_8080_write_register(0xF7, 1, p_param);
 }
 
 
@@ -1071,19 +1137,19 @@ void lcd_set_rotation(uint8_t orientation)
   {
     case 0:
       *p_param = 0x40 | 0x08;
-      bus_8080_write_register(0x36, p_param, 1);
+      bus_8080_write_register(0x36, 1, p_param);
       break;
     case 1:
       *p_param = 0x20 | 0x08;
-      bus_8080_write_register(0x36, p_param, 1);
+      bus_8080_write_register(0x36, 1, p_param);
       break;
     case 2:
       *p_param = 0x80 | 0x08;
-      bus_8080_write_register(0x36, p_param, 1);
+      bus_8080_write_register(0x36, 1, p_param);
       break;
     case 3:
       *p_param = 0x40 | 0x80 | 0x20 | 0x08;
-      bus_8080_write_register(0x36, p_param, 1);
+      bus_8080_write_register(0x36, 1, p_param);
       break;
   }
 }
