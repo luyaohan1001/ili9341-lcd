@@ -729,20 +729,20 @@ void ili9341_nv_memory_status_read()
 }
 /* 8.3.23. Read ID4 (D3h) */
 /**
-	* @brief Read LCD Controller Chip (ILI9341) ID. 
-	* @note  It has been tested that some display modules has all manufacturer/version set to 0.
-	*        Thus a more trustworthy way to test 8080 Read is to read the controller IC (ILI9341)'s ID through ID4 register.
-	*/
+  * @brief Read LCD Controller Chip (ILI9341) ID. 
+  * @note  It has been tested that some display modules has all manufacturer/version set to 0.
+  *        Thus a more trustworthy way to test 8080 Read is to read the controller IC (ILI9341)'s ID through ID4 register.
+  */
 void ili9341_get_id4(uint8_t* p_read_data) 
 {
   bus_8080_write_command(0xD3);
   bus_8080_read_data(p_read_data, 4);
 
   char msg[64];
-	sprintf(msg, "- Printing ID4 register value -\n");
-	serial_print(msg);
-	sprintf(msg, "ILI9341 IC Version: %d \nIC Model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
-	serial_print(msg);
+  sprintf(msg, "- Printing ID4 register value -\n");
+  serial_print(msg);
+  sprintf(msg, "ILI9341 IC Version: %d \nIC Model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
+  serial_print(msg);
 }
 
 /* 8.3.24. Positive Gamma Correction (E0h) */
@@ -910,32 +910,32 @@ void ili9341_init()
 
 
 /**
-	* @brief Send to ILI9341 the define area of frame memory where MCU can access.
+  * @brief Send to ILI9341 the define area of frame memory where MCU can access.
   * @note  Refer to state diagram in ILI9341 Version V1.11 Section 8.8.20, Column Address Set.
-	*/
+  */
 void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
 {
-	ili9341_set_column_address(x1, x2);
-	ili9341_set_page_address(y1, y2);
-	ili9341_memory_write();
+  ili9341_set_column_address(x1, x2);
+  ili9341_set_page_address(y1, y2);
+  ili9341_memory_write();
 }
 
 
 
 
 /**
-	* @brief Draw a horizontal line.
-	*/
+  * @brief Draw a horizontal line.
+  */
 void lcd_draw_horizontal_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t line_color)                   
 { 
   bus_8080_write_command(0x2C);       //write_memory_start
-	uint16_t end_coordinate_x = start_coordinate_x + length;
-	uint16_t end_coordinate_y = start_coordinate_y;
+  uint16_t end_coordinate_x = start_coordinate_x + length;
+  uint16_t end_coordinate_y = start_coordinate_y;
 
-	/* Sets the frame memory area. */
+  /* Sets the frame memory area. */
   ili9341_set_frame_address(start_coordinate_x, start_coordinate_y, end_coordinate_x, end_coordinate_y);  
 
-	/* Fill with line_color. */
+  /* Fill with line_color. */
   for(uint16_t i = 1; i<=length; ++i)
   {
     bus_8080_write_data(line_color >> 8);  /* MSB first. */
@@ -944,19 +944,19 @@ void lcd_draw_horizontal_line(uint16_t start_coordinate_x, uint16_t start_coordi
 }
 
 /**
-	* Draw a vertical line. Fill color if necessary.
-	*/
+  * Draw a vertical line. Fill color if necessary.
+  */
 void lcd_draw_vertical_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t line_color)                   
 { 
   
   bus_8080_write_command(0x2c); //write_memory_start
   
-	uint16_t end_coordinate_x = start_coordinate_x;
-	uint16_t end_coordinate_y = start_coordinate_y + length;
-	/* Sets the frame memory area. */
+  uint16_t end_coordinate_x = start_coordinate_x;
+  uint16_t end_coordinate_y = start_coordinate_y + length;
+  /* Sets the frame memory area. */
   ili9341_set_frame_address(start_coordinate_x, start_coordinate_y, end_coordinate_x, end_coordinate_y); 
 
-	/* Fill with line_color. */
+  /* Fill with line_color. */
   for(uint16_t i=1; i<=length; ++i)
   { 
     bus_8080_write_data(line_color>>8);   
@@ -965,9 +965,9 @@ void lcd_draw_vertical_line(uint16_t start_coordinate_x, uint16_t start_coordina
 }
 
 /**
-	* @brief Draw an empty rectangle frame.
-	* @note  This is equivalent to drawing two vertical lines plus two horizontal lines.
-	*/
+  * @brief Draw an empty rectangle frame.
+  * @note  This is equivalent to drawing two vertical lines plus two horizontal lines.
+  */
 void lcd_draw_rectangle_unfilled(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t rect_width, uint16_t rect_height, uint16_t frame_color)
 {
   lcd_draw_horizontal_line(start_coordinate_x, start_coordinate_y, rect_width, frame_color);
@@ -978,8 +978,8 @@ void lcd_draw_rectangle_unfilled(uint16_t start_coordinate_x, uint16_t start_coo
 }
 
 /**
-	* @brief Draw a solid color-filled rectangle.
-	*/
+  * @brief Draw a solid color-filled rectangle.
+  */
 void lcd_draw_rectangle_filled(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t rect_width, uint16_t rect_height, uint16_t rect_color)
 {
   for (uint16_t i = 0; i < rect_height; ++i)
@@ -989,20 +989,20 @@ void lcd_draw_rectangle_filled(uint16_t start_coordinate_x, uint16_t start_coord
 }
 
 /**
-	* @brief Clear the entire screen and fill with color.
-	*/
+  * @brief Clear the entire screen and fill with color.
+  */
 void lcd_clear_all(uint16_t fill_color)                   
 { 
-	uint16_t start_coordinate_x = 0;
-	uint16_t start_coordinate_y = 0;
-	uint16_t end_coordinate_x = TFT_PIXEL_H_LENGTH - 1;
-	uint16_t end_coordinate_y = TFT_PIXEL_V_WIDTH - 1;
+  uint16_t start_coordinate_x = 0;
+  uint16_t start_coordinate_y = 0;
+  uint16_t end_coordinate_x = TFT_PIXEL_H_LENGTH - 1;
+  uint16_t end_coordinate_y = TFT_PIXEL_V_WIDTH - 1;
 
   ili9341_set_frame_address(start_coordinate_x, start_coordinate_y, end_coordinate_x, end_coordinate_y);
   for(uint16_t i = 0; i < TFT_PIXEL_V_WIDTH; ++i)  
     for(uint16_t m = 0; m < TFT_PIXEL_H_LENGTH; ++m) 
     {
-			/* Write color to fill. */
+      /* Write color to fill. */
       bus_8080_write_data(fill_color>>8);
       bus_8080_write_data(fill_color);
     }
@@ -1011,8 +1011,8 @@ void lcd_clear_all(uint16_t fill_color)
 
 void lcd_draw_dot(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t dot_color) 
 {
-	uint16_t end_coordinate_x = start_coordinate_x + 1;
-	uint16_t end_coordinate_y = start_coordinate_y + 1;
+  uint16_t end_coordinate_x = start_coordinate_x + 1;
+  uint16_t end_coordinate_y = start_coordinate_y + 1;
   ili9341_set_frame_address(start_coordinate_x, start_coordinate_y, end_coordinate_x, end_coordinate_y);  
   bus_8080_write_data(dot_color >> 8); 
   bus_8080_write_data(dot_color);      
@@ -1021,44 +1021,44 @@ void lcd_draw_dot(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint
 
 void lcd_plot_char(int16_t x, int16_t y, unsigned char c,uint16_t color, uint16_t bg, uint8_t size) 
 {
-	for (int8_t i=0; i<6; i++ )
-	{
-		uint8_t line;
-		if (i == 5)
-		{
-			line = 0x0;
-		}
-		else 
-		{
-			line = *((uint8_t*)(font+(c*5)+i));
-		}
+  for (int8_t i=0; i<6; i++ )
+  {
+    uint8_t line;
+    if (i == 5)
+    {
+      line = 0x0;
+    }
+    else 
+    {
+      line = *((uint8_t*)(font+(c*5)+i));
+    }
 
-		for (int8_t j = 0; j<8; j++)
-		{
-			if (line & 0x1)
-			{
-				if (size == 1) // default size
-				{
-					lcd_draw_dot(x+i, y+j, color);
-				}
-				else {  // big size
-					// ili9341_plot_color_block(x+(i*size), y+(j*size), size, size, color);
-				} 
-			} else if (bg != color)
-			{
-				if (size == 1) // default size
-				{
-					lcd_draw_dot(x+i, y+j, bg);
-				}
-				else 
-				{  // big size
-					//ili9341_plot_color_block(x+i*size, y+j*size, size, size, bg);
-				}
-			}
+    for (int8_t j = 0; j<8; j++)
+    {
+      if (line & 0x1)
+      {
+        if (size == 1) // default size
+        {
+          lcd_draw_dot(x+i, y+j, color);
+        }
+        else {  // big size
+          // ili9341_plot_color_block(x+(i*size), y+(j*size), size, size, color);
+        } 
+      } else if (bg != color)
+      {
+        if (size == 1) // default size
+        {
+          lcd_draw_dot(x+i, y+j, bg);
+        }
+        else 
+        {  // big size
+          //ili9341_plot_color_block(x+i*size, y+j*size, size, size, bg);
+        }
+      }
 
-			line >>= 1;
-		}
-	}
+      line >>= 1;
+    }
+  }
 }
 
 void lcd_set_rotation(uint8_t orientation) 
@@ -1067,32 +1067,32 @@ void lcd_set_rotation(uint8_t orientation)
 
   uint8_t p_param[1];
 
-	switch (orientation) 
-	{
-		case 0:
+  switch (orientation) 
+  {
+    case 0:
       *p_param = 0x40 | 0x08;
       bus_8080_write_register(0x36, p_param, 1);
-			break;
-		case 1:
+      break;
+    case 1:
       *p_param = 0x20 | 0x08;
       bus_8080_write_register(0x36, p_param, 1);
-			break;
-		case 2:
+      break;
+    case 2:
       *p_param = 0x80 | 0x08;
       bus_8080_write_register(0x36, p_param, 1);
-			break;
-		case 3:
+      break;
+    case 3:
       *p_param = 0x40 | 0x80 | 0x20 | 0x08;
       bus_8080_write_register(0x36, p_param, 1);
-			break;
-	}
+      break;
+  }
 }
 
 
 void lcd_write_message(char* message, uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint8_t size, uint16_t text_color, uint16_t text_bg_color){
-	for(uint8_t i = 0; i< strlen(message); i++){
-		char single_char = message[i];
-		lcd_plot_char(start_coordinate_x, start_coordinate_y, single_char, text_color, text_bg_color, 1);
-		start_coordinate_x += 6;
-	}
+  for(uint8_t i = 0; i< strlen(message); i++){
+    char single_char = message[i];
+    lcd_plot_char(start_coordinate_x, start_coordinate_y, single_char, text_color, text_bg_color, 1);
+    start_coordinate_x += 6;
+  }
 }
