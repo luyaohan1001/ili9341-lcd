@@ -314,7 +314,7 @@ void bus_8080_read_data(uint8_t* p_read_data, uint8_t length);
 
 
 
-/* ILI9341 Register Access Layer -------------------------------------------------------------------------------------------*/
+/* ILI9341 Regulative Registers Access -------------------------------------------------------------------------------------------*/
 /* 8.2.1. NOP (00h) */
 void ili9341_nop();
 /* 8.2.2. Software Reset (01h) */ 
@@ -398,7 +398,10 @@ void ili9341_get_display_brightness();
 void ili9341_set_CTRL_display();
 /* 8.2.41. Read CTRL Display (54h) */ 
 void ili9341_get_CTRL_display();
+/* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
 void ili9341_set_content_adaptive_brightness_control();
+/* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
+void ili9341_get_content_adaptive_brightness_control();
 /* 8.2.44. Write CABC Minimum Brightness (5Eh) */ 
 void ili9341_set_CABC_minimum_brightness();
 /* 8.2.45. Read CABC Minimum Brightness (5Fh) */ 
@@ -411,49 +414,90 @@ void ili9341_read_id2();
 void ili9341_read_id3();
 
 
+/* ILI9341 Extended Registers Access -------------------------------------------------------------------------------------------*/
+/* 8.3.1. RGB Interface Signal Control (B0h) */
+void ili9341_rgb_interface_signal_control();
+/* 8.3.2. Frame Rate Control (In Normal Mode/Full Colors) (B1h) */
+void ili9341_frame_control_normal_mode();
+/* 8.3.3. Frame Rate Control (In Idle Mode/8 colors) (B2h) */
+void ili9341_frame_control_idle_mode();
+/* 8.3.4. Frame Rate control (In Partial Mode/Full Colors) (B3h) */
+void ili9341_frame_control_partial_mode();
+/* 8.3.5. Display Inversion Control (B4h) */
+void ili9341_display_inversion_control();
+/* 8.3.6. Blanking Porch Control (B5h) */
+void ili9341_blanking_porch_control();
+/* 8.3.7. Display Function Control (B6h) */
+void ili9341_display_function_control();
+/* 8.3.8. Entry Mode Set (B7h) */
+void ili9341_entry_mode_set();
+/* 8.3.9. Backlight Control 1 (B8h) */
+void ili9341_backlight_control_1();
+/* 8.3.10. Backlight Control 2 (B9h) */
+void ili9341_backlight_control_2();
+/* 8.3.11. Backlight Control 3 (BAh) */
+void ili9341_backlight_control_3();
+/* 8.3.12. Backlight Control 4 (BBh) */
+void ili9341_backlight_control_4();
+/* 8.3.13. Backlight Control 5 (BCh) */
+void ili9341_backlight_control_5();
+/* 8.3.14. Backlight Control 7 (BEh) */
+void ili9341_backlight_control_7();
+/* 8.3.15. Backlight Control 8 (BFh)*/
+void ili9341_backlight_control_8();
 
-/* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
-/* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
-
-
-
-
-
-
-
-void ili9341_set_power_control_a();
-/* */ 
-void ili9341_set_power_control_b();
-/* */ 
-void ili9341_set_driver_timing_control_a();
-/* */ 
-void ili9341_set_driver_timing_control_b();
-/* */ 
-void ili9341_set_poweron_sequence_control_b();
-/* */ 
-void ili9341_set_pump_ratio_control();
-/* */ 
+/* 8.3.16. Power Control 1 (C0h) */ 
 void ili9341_set_power_control1();
-/* */ 
+/* 8.3.17. Power Control 2 (C1h) */ 
 void ili9341_set_power_control2();
-/* */ 
+
+/* 8.3.18. VCOM Control 1(C5h) */ 
 void ili9341_set_vcom_control1();
-/* */ 
+/* 8.3.19. VCOM Control 2(C7h) */ 
 void ili9341_set_vcom_control2();
 
 
+/* 8.3.20. NV Memory Write (D0h) */ 
+void ili9341_nv_memory_write();
+/* 8.3.21. NV Memory Protection Key (D1h) */
+void ili9341_nv_memory_protection_key();
+/* 8.3.22. NV Memory Status Read (D2h) */
+void ili9341_nv_memory_status_read();
+/* 8.3.23. Read ID4 (D3h) */
+void ili9341_get_id4(uint8_t* p_read_data);
+/* 8.3.24. Positive Gamma Correction (E0h) */
+void ili9341_positive_gamma_correction();
+/* 8.3.25. Negative Gamma Correction (E1h) */
+void ili9341_negative_gamma_correction();
+/* 8.3.26. Digital Gamma Control 1 (E2h) */
+void ili9341_digital_gamma_control_1();
+/* 8.3.27. Digital Gamma Control 2(E3h) */
+void ili9341_digital_gamma_control_2();
+/* 8.3.28. Interface Control (F6h)  */
+void ili9341_interface_control();
+
+/* 8.4.1 Power control A (CBh) */
+void ili9341_set_power_control_a();
+/* 8.4.2 Power control B (CFh) */ 
+void ili9341_set_power_control_b();
+/* 8.4.3 Driver timing control A (E8h) */ 
+void ili9341_set_driver_timing_control_a();
+/* 8.4.5 Driver timing control B (EAh) */ 
+void ili9341_set_driver_timing_control_b();
+/* 8.4.6 Power on sequence control (EDh) */ 
+void ili9341_set_poweron_sequence_control();
+/* 8.4.7 Enable 3G (F2h) */
+void ili9341_enable_3G();
+
+
+
 /* */ 
-void ili9341_set_frame_rate_control();
-/* */ 
-void ili9341_set_display_function_control();
-
-
-
+void ili9341_set_pump_ratio_control();
 
 /* */ 
 void ili9341_hard_reset();
 /* */ 
-void ili9341_get_id4(uint8_t* p_read_data);
+
 
 
 
