@@ -408,98 +408,238 @@ void ili9341_hard_reset()
 
 
 /* ILI9341 Regulative Registers Access -------------------------------------------------------------------------------------------*/
-/* 8.2.1. NOP (00h) */
+
+/**
+  * @brief 8.2.1. NOP (00h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_nop()
 {
   bus_8080_write_register(0x00, 0, NULL);
 }
-/* 8.2.2. Software Reset (01h) */ 
+
+/**
+  * @brief  8.2.2. Software Reset (01h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_soft_reset()
 {
   bus_8080_write_register(0x01, 0, NULL);
 }
-/* 8.2.3. Read display identification information (04h) */ 
-void ili9341_read_display_identification(uint8_t* p_read_data)
-{
 
-}
-/* 8.2.4. Read Display Status (09h) */ 
-void ili9341_read_display_status(uint8_t* p_read_data)
-{
 
-}
-/* 8.2.5. Read Display Power Mode (0Ah) */ 
-void ili9341_read_display_power_mode(uint8_t* p_read_data)
-{
-
-}
-/* 8.2.6. Read Display MADCTL (0Bh) */ 
-void ili9341_read_display_MADCTL(uint8_t* p_read_data)
-{
-
-}
-/* 8.2.7. Read Display Pixel Format (0Ch) */ 
-void ili9341_read_display_pixel_format(uint8_t* p_read_data)
-{
-
-}
-/* 8.2.8. Read Display Image Format (0Dh) */ 
-void ili9341_read_display_image_format(uint8_t* p_read_data)
-{
-
-}
-/* 8.2.9. Read Display Signal Mode (0Eh) */ 
-void ili9341_read_display_signal_mode(uint8_t* p_read_data)
-{
-
-}
-/* 8.2.10. Read Display Self-Diagnostic Result (0Fh) */ 
-void ili9341_read_display_diagnostic_result(uint8_t* p_read_data)
+/** 
+  * @brief  TODO 8.2.3. Read display identification information (04h) 
+  * @param  p_read_data Pointer to display identification data.
+  * @retval None.
+  */
+void ili9341_get_display_identification(uint8_t* p_read_data)
 {
 
 }
 
-/* 8.2.11. Enter Sleep Mode (10h) */ 
+/** 
+  * @brief  TODO 8.2.4. Read Display Status (09h) 
+  * @param  p_read_data Pointer to display status data.
+  * @retval None.
+  */
+void ili9341_get_display_status(uint8_t* p_read_data)
+{
+
+}
+
+/** 
+  * @brief  TODO 8.2.5. Read Display Power Mode (0Ah) 
+  * @param  p_read_data Pointer to display power mode.
+  * @retval None.
+  */
+void ili9341_get_display_power_mode(uint8_t* p_read_data)
+{
+
+}
+
+
+/** 
+  * @brief  TODO 8.2.6. Read Display MADCTL (0Bh) 
+  * @param  p_read_data Pointer to display MADCTL
+  * @retval None.
+  */
+void ili9341_get_display_MADCTL(uint8_t* p_read_data)
+{
+
+}
+
+/**
+  * @brief       8.2.7. Read Display Pixel Format (0Ch) 
+  * @param[OUT]  p_read_data Pointer to pixel format data read.
+  * @retval      None.
+  * @note        DBI[2:0]       #Bits/pixel      RGB Format 
+  *              101            16 bits          RGB5-6-5 65K)    
+  *              110            18 bits          RGB6-6-6 262K) 
+  */
+void ili9341_get_display_pixel_format(uint8_t* p_read_data)
+{
+  bus_8080_read_register(0x0C, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing <Display Pixel Format> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "Display pixel format: RIM:%d DPI: %d DBI: %d \n", p_read_data[1] & 0x80, p_read_data[1] & 0x70, p_read_data[1] & 0x07); /* p_read_data[0] is a dummy byte. */
+  serial_print(msg);
+  #endif
+}
+
+
+/** 
+  * @brief  TODO 8.2.8. Read Display Image Format (0Dh)
+  * @param  p_read_data Pointer to display format.
+  * @retval None.
+  */
+void ili9341_get_display_image_format(uint8_t* p_read_data)
+{
+
+}
+
+/**
+  * @brief  8.2.9. Read Display Signal Mode (0Eh) 
+  * @param  p_read_data Pointer to data read from RDDSM (Read Display Signal Mode).
+  * @retval None. 
+  * @note   Bit               Description                   
+  *         7                 0 Tearing effect line OFF
+  *                           1 Tearing effect line ON
+  *         6                 0 Tearing effect line mode 1
+  *                           1 Tearing effect line mode 2
+  *         5                 0 Horizontal sync. (RGB interface) OFF
+  *                           1 Horizontal sync. (RGB interface) ON
+  *         4                 0 Vertical sync. (RGB interface) OFF
+  *                           1 Vertical sync. (RGB interface) ON
+  *         3                 0 Pixel clock (DOTCLK, RGB interface) OFF
+  *                           1 Pixel clock (DOTCLK, RGB interface) ON
+  *         2                 0 Data enable (DE, RGB interface) OFF  
+  *                           1 Data enable (DE, RGB interface) ON
+  *         1                 Don't Care
+  *         0                 Don't Care
+  */
+void ili9341_get_display_signal_mode(uint8_t* p_read_data)
+{
+  bus_8080_read_register(0x0E, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+
+  char msg[64];
+  sprintf(msg, "- Printing <RDDSM (Read Display Signal Mode)> register value -\n"); serial_print(msg);
+  sprintf(msg, "Tearing effect line: %d\n", (p_read_data[1] & 0x80) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "Tearing effect line mode: %d\n", (p_read_data[1] & 0x40) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "Horizontal sync: %d\n", (p_read_data[1] & 0x20) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "Vertical sync: %d\n", (p_read_data[1] & 0x10) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "Pixel clock: %d\n", (p_read_data[1] & 0x08) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "Data enable: %d\n", (p_read_data[1] & 0x04) ? 1 : 0); 
+  serial_print(msg);
+  #endif
+}
+
+
+
+/** 
+  * @brief  TODO 8.2.10. Read Display Self-Diagnostic Result (0Fh) 
+  * @param  p_read_data Pointer to display self-diagnostic result.
+  * @retval None.
+  */
+void ili9341_get_display_diagnostic_result(uint8_t* p_read_data)
+{
+
+}
+
+/** 
+  * @brief  8.2.11. Enter Sleep Mode (10h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_enter_sleep_mode() 
 {
-
+  bus_8080_write_register(0x10, 0, NULL);
 }
-/* 8.2.12. Sleep Out (11h) */ 
+
+
+/** 
+  * @brief  8.2.12. Sleep Out (11h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_exit_sleep_mode()
 {
   bus_8080_write_register(0x11, 0, NULL);
   HAL_Delay(120);             //必须120ms的延迟
 }
 
-/* 8.2.13. Partial Mode ON (12h)*/ 
-void ili9341_partial_mode_on()
+/**
+  * @brief  8.2.13. Partial Mode ON (12h)
+  * @param  None.
+  * @retval None. 
+  * @note   This command turns on partial mode the partial mode window 
+  *            is described by the Partial Area command (0x30). 
+  *          To leave Partial mode, the Normal Display Mode On 
+  *            command (0x13) should be written
+  */ 
+void ili9341_set_partial_mode_on()
 {
   bus_8080_write_register(0x12, 0, NULL);
 }
-/* 8.2.14. Normal Display Mode ON (13h)*/ 
+
+
+/** 
+  * @brief  8.2.14. Normal Display Mode ON (13h)
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_normal_mode_on()
 {
   bus_8080_write_register(0x13, 0, NULL);
 }
-/* 8.2.15. Display Inversion OFF (20h)*/ 
-void ili9341_display_inversion_off()
-{
 
-}
-/* 8.2.15. Display Inversion OFF (20h) */ 
-void ili9341_display_inversion_on()
+/** 
+  * @brief  8.2.15. Display Inversion OFF (20h)
+  * @param  None.
+  * @retval None.
+  */
+void ili9341_set_display_inversion_off()
 {
-
+  bus_8080_write_register(0x20, 0, NULL);
 }
-/* 8.2.17. Gamma Set (26h) */ 
+
+/** 
+  * @brief  8.2.16. Display Inversion ON (21h) 
+  * @param  None.
+  * @retval None.
+  */
+void ili9341_set_display_inversion_on()
+{
+  bus_8080_write_register(0x21, 0, NULL);
+}
+
+
+/** 
+  * @brief  8.2.17. Gamma Set (26h) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_set_gamma()
 {
-
+  uint8_t p_param[1] = {0x01};
+  bus_8080_write_register(0x26, 4, p_param);
 }
 
-/* 8.2.18. Display OFF (28h) */ 
+
 /** 
-  * @brief  ILI9341 enters DISPLAY OFF mode. 
+  * @brief  8.2.18. Display OFF (28h) 
   *         Output of Frame Memory is disabled and blank paged is inserted. 
   * @param  None. 
   * @retval None.
@@ -510,9 +650,9 @@ void ili9341_set_display_off()
   bus_8080_write_register(0x28, 0, NULL);
 }
 
-/* 8.2.19. Display ON (29h) */ 
+
 /** 
-  * @brief  ILI9341 enters DISPLAY ON mode. 
+  * @brief  8.2.19. Display ON (29h) 
   *         This command recovers the IC from DISPLAY OFF mode.
   *         Output from frame memory is enabled.
   * @param  None. 
@@ -524,23 +664,40 @@ void ili9341_set_display_on()
   bus_8080_write_register(0x29, 0, NULL);
 }
 
-/* 8.2.20. Column Address Set (2Ah) */ 
+
+/** 
+  * @brief  8.2.20. Column Address Set (2Ah) 
+  * @param  x1 Starting column 
+  * @param  x2 Ending column
+  * @retval None.
+  * @note   Imagine vertical pointers as columns. Counterpart to page addresses.
+  */
 void ili9341_set_column_address(uint16_t x1, uint16_t x2)
 {
-
   uint8_t p_param[4] = { (uint8_t)(x1 >> 8), (uint8_t)x1, (uint8_t)(x2 >> 8), (uint8_t)x2};
   bus_8080_write_register(0x2A, 4, p_param);
 }
 
-/* 8.2.21. Page Address Set (2Bh) */ 
+
+/** 
+  * @brief  8.2.21. Page Address Set (2Bh)
+  * @param  y1 Starting page
+  * @param  y2 Ending page
+  * @retval None.
+  * @note   Imagine horizontal pointers as columns. Counterpart to column addresses.
+  */
 void ili9341_set_page_address(uint16_t y1, uint16_t y2)
 {
-
-  uint8_t p_param[4] = { (uint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
+  uint8_t p_param[4] = { (Vuint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
   bus_8080_write_register(0x2B, 4, p_param);
 }
 
-/* 8.2.22. Memory Write (2Ch) */ 
+
+/** 
+  * @brief  TODO 8.2.22. Memory Write (2Ch) 
+  * @param  None.
+  * @retval None.
+  */
 void ili9341_memory_write()
 {
   bus_8080_write_register(0x2C, 0, NULL);
@@ -557,24 +714,40 @@ void ili9341_memory_read()
 
 }
 /* 8.2.25. Partial Area (30h) */ 
-void ili9341_partial_area()
+void ili9341_set_partial_area()
 {
-
+  
 }
 /* 8.2.26. Vertical Scrolling Definition (33h) */ 
-void ili9341_vertical_scrolling_definition()
+void ili9341_set_vertical_scrolling_definition(uint16_t top_fixed_area_height, uint16_t vertical_scrolling_area_height, uint16_t bottom_fixed_area_height)
 {
-
+  uint8_t p_param[6] = {top_fixed_area_height >> 8, top_fixed_area_height & 0xFF,
+                        vertical_scrolling_area_height >> 8, vertical_scrolling_area_height & 0xFF,
+                        bottom_fixed_area_height >> 8, bottom_fixed_area_height & 0xFF
+                       };
+  bus_8080_write_register(0x35, 6, p_param);
 }
+
 /* 8.2.27. Tearing Effect Line OFF (34h) */ 
-void ili9341_tearing_effect_line_off()
+void ili9341_set_tearing_effect_line_off()
 {
 
 }
-/* 8.2.28. Tearing Effect Line ON (35h) */ 
-void ili9341_tearing_effect_line_on()
+/**
+  * @brief  8.2.28. Tearing Effect Line ON (35h) 
+  * @param  None.
+  * @retval None.
+  * @note   When M=0:
+  *   When M=1:
+  *   The Tearing Effect Output line consists of V-Blanking information only:
+  *   When M=0:
+  *   The Tearing Effect Output Line consists of both V-Blanking and H-Blanking information.
+  *   To confirm tearing effect mode on/off, read 0x0E, Read Display Signal Mode.
+  */
+void ili9341_set_tearing_effect_line_on()
 {
-
+  uint8_t p_param[1] = {1 << 0};
+  bus_8080_write_register(0x35, 1, p_param);
 }
 /* 8.2.29. Memory Access Control (36h) */
 void ili9341_set_memory_access_control()
@@ -588,15 +761,23 @@ void ili9341_vertical_scrolling_start_address()
 {
 
 }
-/* 8.2.31. Idle Mode OFF (38h) */
-void ili9341_idle_mode_off()
+/**
+  * @brief  8.2.31. Idle Mode OFF (38h) 
+  * @param  None.
+  * @retval None.
+  * @brief This command is used to enter into Idle mode on.
+  *          In the idle on mode, color expression is reduced. 
+  *        The primary and the secondary colors using MSB of each RGB 
+  *          in the Frame Memory, 8 color depth data is displayed.
+  */
+void ili9341_set_idle_mode_off()
 {
-
+  bus_8080_write_register(0x38, 0, NULL);
 }
 /* 8.2.32. Idle Mode ON (39h) */
-void ili9341_idle_mode_on()
+void ili9341_set_idle_mode_on()
 {
-
+  bus_8080_write_register(0x39, 0, NULL);
 }
 /* 8.2.33. COLMOD: Pixel Format Set (3Ah) */
 void ili9341_set_pixel_format_set()
@@ -625,13 +806,33 @@ void ili9341_get_scanline()
 {
 
 }
-/* 8.2.38. Write Display Brightness (51h) */ 
+/**
+  * @brief  8.2.38. Write Display Brightness (51h) 
+  * @param  None.
+  * @retval None.
+  * @note   At the time of this program developed, 
+  *           the brightness pinout is hardwired to VCC. 
+  *         Thus through experiment I was not able to set brightness
+  *           by writing to 0x51. 
+  */ 
+  
 void ili9341_set_display_brightness()
 {
-  uint8_t p_param[1] = {0x00};
+  /* p_param pointes the brightness value. */
+  uint8_t p_param[1] = {0x55};
   bus_8080_write_register(0x51, 1, p_param);
 }
-/* 8.2.39. Read Display Brightness (52h) */ 
+
+/**
+  * @brief      8.2.39. Read Display Brightness (52h) 
+  * @param[OUT] p_read_data Pointer to brightness data read.
+  * @retval     None. 
+  * @note   At the time of this program developed, 
+  *           the brightness pinout is hardwired to VCC. 
+  *         Thus through experiment I was not able to set brightness
+  *           by writing to 0x51. 
+  *         And brightness read from 0x52 always returns 0 for unknown reason.
+  */
 void ili9341_get_display_brightness(uint8_t* p_read_data)
 {
   bus_8080_read_register(0x52, 2, p_read_data);
@@ -640,21 +841,49 @@ void ili9341_get_display_brightness(uint8_t* p_read_data)
   char msg[64];
   sprintf(msg, "- Printing ILI9341 <Display Brightness> register value -\n");
   serial_print(msg);
-  sprintf(msg, "brightness (0 ~ 255): %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  sprintf(msg, "Brightness (0 ~ 255): %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
   serial_print(msg);
   #endif
 
 }
-/* 8.2.40. Write CTRL Display (53h) */ 
+/** 
+  * @brief  8.2.40. Write CTRL Display (53h) 
+  * @note   At the time of this program developed, 
+  *           the brightness pinout is hardwired to VCC. 
+  *         Writing to CTRL_display was successful, however LCD brightness 
+  *           did not adjust accordingly. 
+  */
 void ili9341_set_CTRL_display()
 {
-  uint8_t p_param[1] = {0x2C};
+  uint8_t p_param[1] = {0x00};
   bus_8080_write_register(0x53, 1, p_param);
 }
-/* 8.2.41. Read CTRL Display (54h) */ 
-void ili9341_get_CTRL_display()
-{
 
+/**
+  * @brief  8.2.41. Read CTRL Display (54h) 
+  * @param  p_read_data Pointer to data read from CTRL Display register.
+  * @retval None.
+  * @note   This command is used to read brightness setting.
+  *         BCTRL: Brightness Control Block On/Off,
+  *         DD: Display Dimming
+  *         BL: Backlight On/Off
+  
+  */
+void ili9341_get_CTRL_display(uint8_t* p_read_data)
+{
+  bus_8080_read_register(0x54, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing ILI9341 <CTRL Display> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "BCTRL (Brightness Control on/off): %d\n", (p_read_data[1] & 0x20) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "DD (Display Dimming on/off): %d\n", (p_read_data[1] & 0x08) ? 1 : 0); 
+  serial_print(msg);
+  sprintf(msg, "BL (Complete turn off backlight): %d\n", (p_read_data[1] & 0x04) ? 1 : 0); 
+  serial_print(msg);
+  #endif
 }
 /* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
 void ili9341_set_content_adaptive_brightness_control()
@@ -697,7 +926,7 @@ void ili9341_get_id1(uint8_t* p_read_data)
   char msg[64];
   sprintf(msg, "- Printing ILI9341 <id1> register value -\n");
   serial_print(msg);
-  sprintf(msg, "ID1: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  sprintf(msg, "ID1: %#02x\n", p_read_data[1]); 
   serial_print(msg);
   #endif
 }
@@ -723,7 +952,7 @@ void ili9341_get_id2(uint8_t* p_read_data)
   char msg[64];
   sprintf(msg, "- Printing ILI9341 <id2> register value -\n");
   serial_print(msg);
-  sprintf(msg, "ID2: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  sprintf(msg, "ID2: %#02x\n", p_read_data[1]); 
   serial_print(msg);
   #endif
 
@@ -749,10 +978,9 @@ void ili9341_get_id3(uint8_t* p_read_data)
   char msg[64];
   sprintf(msg, "- Printing ILI9341 <id3> register value -\n");
   serial_print(msg);
-  sprintf(msg, "ID3: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  sprintf(msg, "ID3: %#02x\n", p_read_data[1]); 
   serial_print(msg);
   #endif
-
 }
 
 
@@ -887,9 +1115,9 @@ void ili9341_get_id4(uint8_t* p_read_data)
  
   #if defined ILI9341_DEBUG
   char msg[64];
-  sprintf(msg, "- printing id4 register value -\n");
+  sprintf(msg, "- Printing id4 register value -\n");
   serial_print(msg);
-  sprintf(msg, "ili9341 ic version: %d \nic model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
+  sprintf(msg, "ili9341 ic version: %d \nIC model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
   serial_print(msg);
   #endif
 }
@@ -990,27 +1218,6 @@ void ili9341_set_display_function_control()
   uint8_t p_param[3] = {0x08, 0x82, 0x27};
   bus_8080_write_register(0xB6, 3, p_param);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

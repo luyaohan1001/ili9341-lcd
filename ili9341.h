@@ -327,34 +327,34 @@ void ili9341_nop();
 /* 8.2.2. Software Reset (01h) */ 
 void ili9341_soft_reset();
 /* 8.2.3. Read display identification information (04h) */ 
-void ili9341_read_display_identification(uint8_t* p_read_data);
+void ili9341_get_display_identification(uint8_t* p_read_data);
 /* 8.2.4. Read Display Status (09h) */ 
-void ili9341_read_display_status(uint8_t* p_read_data);
+void ili9341_get_display_status(uint8_t* p_read_data);
 /* 8.2.5. Read Display Power Mode (0Ah) */ 
-void ili9341_read_display_power_mode(uint8_t* p_read_data);
+void ili9341_get_display_power_mode(uint8_t* p_read_data);
 /* 8.2.6. Read Display MADCTL (0Bh) */ 
-void ili9341_read_display_MADCTL(uint8_t* p_read_data);
+void ili9341_get_display_MADCTL(uint8_t* p_read_data);
 /* 8.2.7. Read Display Pixel Format (0Ch) */ 
-void ili9341_read_display_pixel_format(uint8_t* p_read_data);
+void ili9341_get_display_pixel_format(uint8_t* p_read_data);
 /* 8.2.8. Read Display Image Format (0Dh) */ 
-void ili9341_read_display_image_format(uint8_t* p_read_data);
+void ili9341_get_display_image_format(uint8_t* p_read_data);
 /* 8.2.9. Read Display Signal Mode (0Eh) */ 
-void ili9341_read_display_signal_mode(uint8_t* p_read_data);
+void ili9341_get_display_signal_mode(uint8_t* p_read_data);
 /* 8.2.10. Read Display Self-Diagnostic Result (0Fh) */ 
-void ili9341_read_display_diagnostic_result(uint8_t* p_read_data);
+void ili9341_get_display_diagnostic_result(uint8_t* p_read_data);
 
 /* 8.2.11. Enter Sleep Mode (10h) */ 
 void ili9341_enter_sleep_mode();
 /* 8.2.12. Sleep Out (11h) */ 
 void ili9341_exit_sleep_mode();
 /* 8.2.13. Partial Mode ON (12h)*/ 
-void ili9341_partial_mode_on();
+void ili9341_set_partial_mode_on();
 /* 8.2.14. Normal Display Mode ON (13h)*/ 
 void ili9341_normal_mode_on();
 /* 8.2.15. Display Inversion OFF (20h)*/ 
-void ili9341_display_inversion_off();
-/* 8.2.15. Display Inversion OFF (20h) */ 
-void ili9341_display_inversion_on();
+void ili9341_set_display_inversion_off();
+/* 8.2.16. Display Inversion ON (21h) */
+void ili9341_set_display_inversion_on();
 /* 8.2.17. Gamma Set (26h) */ 
 void ili9341_set_gamma();
 /* 8.2.18. Display OFF (28h) */ 
@@ -372,21 +372,21 @@ void ili9341_set_color();
 /* 8.2.24. Memory Read (2Eh) */ 
 void ili9341_memory_read();
 /* 8.2.25. Partial Area (30h) */ 
-void ili9341_partial_area();
+void ili9341_set_partial_area();
 /* 8.2.26. Vertical Scrolling Definition (33h) */ 
-void ili9341_vertical_scrolling_definition();
+void ili9341_set_vertical_scrolling_definition(uint16_t top_fixed_area_height, uint16_t vertical_scrolling_area_height, uint16_t bottom_fixed_area_height)
 /* 8.2.27. Tearing Effect Line OFF (34h) */ 
-void ili9341_tearing_effect_line_off();
+void ili9341_set_tearing_effect_line_off();
 /* 8.2.28. Tearing Effect Line ON (35h) */ 
-void ili9341_tearing_effect_line_on();
+void ili9341_set_tearing_effect_line_on();
 /* 8.2.29. Memory Access Control (36h) */
 void ili9341_set_memory_access_control();
 /* 8.2.30. Vertical Scrolling Start Address (37h) */
 void ili9341_vertical_scrolling_start_address();
 /* 8.2.31. Idle Mode OFF (38h) */
-void ili9341_idle_mode_off();
+void ili9341_set_idle_mode_off();
 /* 8.2.32. Idle Mode ON (39h) */
-void ili9341_idle_mode_on();
+void ili9341_set_idle_mode_on();
 /* 8.2.33. COLMOD: Pixel Format Set (3Ah) */
 void ili9341_set_pixel_format_set();
 /* 8.2.34. Write_Memory_Continue (3Ch) */
@@ -404,7 +404,7 @@ void ili9341_get_display_brightness(uint8_t* p_read_data);
 /* 8.2.40. Write CTRL Display (53h) */ 
 void ili9341_set_CTRL_display();
 /* 8.2.41. Read CTRL Display (54h) */ 
-void ili9341_get_CTRL_display();
+void ili9341_get_CTRL_display(uint8_t* p_read_data);
 /* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
 void ili9341_set_content_adaptive_brightness_control();
 /* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
