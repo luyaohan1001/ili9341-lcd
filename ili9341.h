@@ -308,9 +308,14 @@ void gpio_configure_8080_datapins_input_mode();
 void gpio_configure_8080_datapins_output_mode();
 uint8_t bus_8080_read_parallel_datapins();
 void bus_8080_write_parallel_datapins(uint8_t write_data);
+
 void bus_8080_write_command(uint8_t cmd);
 void bus_8080_write_data(uint8_t data);
 void bus_8080_read_data(uint8_t* p_read_data, uint8_t length);
+
+  
+void bus_8080_write_register(uint8_t target_register, uint8_t length, uint8_t* p_param);
+void bus_8080_read_register(uint8_t target_register, uint8_t length, uint8_t* p_read_data);
 
 
 
@@ -395,7 +400,7 @@ void ili9341_get_scanline();
 /* 8.2.38. Write Display Brightness (51h) */ 
 void ili9341_set_display_brightness();
 /* 8.2.39. Read Display Brightness (52h) */ 
-void ili9341_get_display_brightness();
+void ili9341_get_display_brightness(uint8_t* p_read_data);
 /* 8.2.40. Write CTRL Display (53h) */ 
 void ili9341_set_CTRL_display();
 /* 8.2.41. Read CTRL Display (54h) */ 
@@ -409,11 +414,11 @@ void ili9341_set_CABC_minimum_brightness();
 /* 8.2.45. Read CABC Minimum Brightness (5Fh) */ 
 void ili9341_get_CABC_minimum_brightness();
 /* 8.2.46. Read ID1 (DAh) */ 
-void ili9341_read_id1();
+void ili9341_get_id1(uint8_t* p_read_data);
 /* 8.2.47. Read ID2 (DBh) */ 
-void ili9341_read_id2();
+void ili9341_get_id2(uint8_t* p_read_data);
 /* 8.2.48. Read ID3 (DCh) */ 
-void ili9341_read_id3();
+void ili9341_get_id3(uint8_t* p_read_data);
 
 
 /* ILI9341 Extended Registers Access -------------------------------------------------------------------------------------------*/

@@ -11,6 +11,9 @@
 /* Includes ---------------------------------------------------------------------------------------------------------------------------------------*/
 #include "ili9341.h"
 
+/* Macros -----------------------------------------------------------------------------------------------------------------------------------------*/
+#define ILI9341_DEBUG /* When defined, debug messages are logged through serial_print(). */
+
 /* GPIO physical layer ----------------------------------------------------------------------------------------------------------------------------*/
 /* GPIO Defined on STM32F401 */
 /* Module Pin Name         Description                Assigned GPIO */
@@ -313,7 +316,7 @@ void bus_8080_write_register(uint8_t target_register, uint8_t length, uint8_t* p
   *         WR Write Line turns high once the MCU has written the command byte. 
   *           The MCU enters read mode and consumes data prepared by ili9341 on D[7:0].
   */
-void bus_8080_read_register(uint8_t target_register, uint8_t* p_read_data, uint8_t length)
+void bus_8080_read_register(uint8_t target_register, uint8_t length, uint8_t* p_read_data)
 {
   
   /* Write command byte (target register) */
@@ -325,10 +328,11 @@ void bus_8080_read_register(uint8_t target_register, uint8_t* p_read_data, uint8
   bus_8080_write_parallel_datapins(target_register); /* Write data to data bus D7-D0. */  
   LCD_WR_RISING_EDGE();
 
-  /* Set Pins for 8080 parallel bus read mode. */
+  /* MCU Enter read mode. */
   LCD_RS_1();  
   LCD_WR_1();
   gpio_configure_8080_datapins_input_mode();
+  /* Iterate through each data. */ 
   for (int i = 0; i < length; ++i)
   {
     LCD_RD_0();
@@ -349,7 +353,6 @@ void bus_8080_write_command(uint8_t cmd)
   gpio_configure_8080_datapins_output_mode();
   bus_8080_write_parallel_datapins(cmd);
   LCD_WR_RISING_EDGE();
-
   /* De-select Chip. */
   LCD_CS_1();
 }
@@ -384,10 +387,15 @@ void bus_8080_read_data(uint8_t* p_read_data, uint8_t length)
     p_read_data[i] = bus_8080_read_parallel_datapins();
     LCD_RD_1();
   }
-
   LCD_CS_1();
 }
 
+/**
+  * @brief  Reset ili9341 through RESET pin.
+  * @param  None.
+  * @retval None.
+  * @note   RST pin is active low. ili9341 is reset state at low level.
+  */
 void ili9341_hard_reset() 
 {
   LCD_RST_1();
@@ -466,12 +474,12 @@ void ili9341_exit_sleep_mode()
 /* 8.2.13. Partial Mode ON (12h)*/ 
 void ili9341_partial_mode_on()
 {
-
+  bus_8080_write_register(0x12, 0, NULL);
 }
 /* 8.2.14. Normal Display Mode ON (13h)*/ 
 void ili9341_normal_mode_on()
 {
-
+  bus_8080_write_register(0x13, 0, NULL);
 }
 /* 8.2.15. Display Inversion OFF (20h)*/ 
 void ili9341_display_inversion_off()
@@ -620,17 +628,28 @@ void ili9341_get_scanline()
 /* 8.2.38. Write Display Brightness (51h) */ 
 void ili9341_set_display_brightness()
 {
-
+  uint8_t p_param[1] = {0x00};
+  bus_8080_write_register(0x51, 1, p_param);
 }
 /* 8.2.39. Read Display Brightness (52h) */ 
-void ili9341_get_display_brightness()
+void ili9341_get_display_brightness(uint8_t* p_read_data)
 {
+  bus_8080_read_register(0x52, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing ILI9341 <Display Brightness> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "brightness (0 ~ 255): %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  serial_print(msg);
+  #endif
 
 }
 /* 8.2.40. Write CTRL Display (53h) */ 
 void ili9341_set_CTRL_display()
 {
-
+  uint8_t p_param[1] = {0x2C};
+  bus_8080_write_register(0x53, 1, p_param);
 }
 /* 8.2.41. Read CTRL Display (54h) */ 
 void ili9341_get_CTRL_display()
@@ -657,19 +676,82 @@ void ili9341_get_CABC_minimum_brightness()
 {
 
 }
-/* 8.2.46. Read ID1 (DAh) */ 
-void ili9341_read_id1()
+
+/** 
+  * @brief 8.2.46. Read ID1 (DAh) 
+  * @param  p_read_data Pointer to the array storing data read from ID1 register.
+  * @retval None.
+  * @note.  p_read_data[0] is expected a dummy byte, ignore it.
+  *         At the time of this code development, id1 returns 0x00
+  *           even through other register read / write were tested successful.
+  *         Since <id1> is defined as the LCD module's manufatuerer ID,
+  *           some brand may use ILI9341 but never programmed its ID.
+  *         In order to do sanity check on fresh connection, use ili9341_get_id4() instead, 
+  *           which should return 0x9341 on its third and fourth bytes.
+  */
+void ili9341_get_id1(uint8_t* p_read_data)
 {
+  bus_8080_read_register(0xDA, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing ILI9341 <id1> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "ID1: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  serial_print(msg);
+  #endif
+}
+
+
+/** 
+  * @brief  8.2.47. Read ID2 (DBh) 
+  * @param  p_read_data Pointer to the array storing data read from ID2 register.
+  * @retval None.
+  * @note.  p_read_data[0] is expected a dummy byte, ignore it.
+  *         At the time of this code development, id1 returns 0x00
+  *           even through other register read / write were tested successful.
+  *         Since <id2> is defined as the LCD module's manufatuerer ID,
+  *           some brand may use ILI9341 but never programmed its ID.
+  *         In order to do sanity check on fresh connection, use ili9341_get_id4() instead, 
+  *           which should return 0x9341 on its third and fourth bytes.
+  */
+void ili9341_get_id2(uint8_t* p_read_data)
+{
+  bus_8080_read_register(0xDB, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing ILI9341 <id2> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "ID2: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  serial_print(msg);
+  #endif
 
 }
-/* 8.2.47. Read ID2 (DBh) */ 
-void ili9341_read_id2()
-{
 
-}
-/* 8.2.48. Read ID3 (DCh) */ 
-void ili9341_read_id3()
+/** 
+  * @brief  8.2.48. Read ID3 (DCh)
+  * @param  p_read_data Pointer to the array storing data read from ID3 register.
+  * @retval None.
+  * @note.  p_read_data[0] is expected a dummy byte, ignore it.
+  *         At the time of this code development, id3 returns 0x00
+  *           even through other register read / write were tested successful.
+  *         Since <id3> is defined as the LCD module's driver ID.
+  *           some brand may use ILI9341 but never programmed its ID.
+  *         In order to do sanity check on fresh connection, use ili9341_get_id4() instead, 
+  *           which should return 0x9341 on its third and fourth bytes.
+  */
+void ili9341_get_id3(uint8_t* p_read_data)
 {
+  bus_8080_read_register(0xDC, 2, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
+  char msg[64];
+  sprintf(msg, "- Printing ILI9341 <id3> register value -\n");
+  serial_print(msg);
+  sprintf(msg, "ID3: %#02x\n", p_read_data[1]); /* id4[0] is dummy byte. */
+  serial_print(msg);
+  #endif
 
 }
 
@@ -801,14 +883,15 @@ void ili9341_nv_memory_status_read()
   */
 void ili9341_get_id4(uint8_t* p_read_data) 
 {
-  bus_8080_write_command(0xD3);
-  bus_8080_read_data(p_read_data, 4);
-
+  bus_8080_read_register(0xD3, 4, p_read_data);
+ 
+  #if defined ILI9341_DEBUG
   char msg[64];
-  sprintf(msg, "- Printing ID4 register value -\n");
+  sprintf(msg, "- printing id4 register value -\n");
   serial_print(msg);
-  sprintf(msg, "ILI9341 IC Version: %d \nIC Model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
+  sprintf(msg, "ili9341 ic version: %d \nic model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
   serial_print(msg);
+  #endif
 }
 
 /* 8.3.24. Positive Gamma Correction (E0h) */
