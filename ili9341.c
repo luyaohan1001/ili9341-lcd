@@ -322,108 +322,108 @@ void bus_8080_read_data(uint8_t* p_read_data, uint8_t length)
   LCD_CS_1();
 }
 
-
-
-
-/** 
-  * @brief Set Power Control A. 
-  */
-void ili9341_set_power_control_a()
+void ili9341_hard_reset() 
 {
-  /* Vcore = 1.6V DDVDH = 5.6V. */
-  uint8_t p_param[5] = {0x39, 0x2C, 0x00, 0x34, 0x02};
-  bus_8080_write_register(0xCB, p_param, 5);
-}
-
-void ili9341_set_power_control_b()
-{
-  uint8_t p_param[3] = {0x00, 0xC1, 0x30};
-  bus_8080_write_register(0xCF, p_param, 3);
+  LCD_RST_1();
+  HAL_Delay(1);
+  LCD_RST_0();
+  HAL_Delay(1);
+  LCD_RST_1();
+  HAL_Delay(1);
 }
 
 
-void ili9341_set_driver_timing_control_a()
-{
-  uint8_t p_param[3] = {0x85, 0x00, 0x78};
-  bus_8080_write_register(0xE8, p_param, 3);
-}
-
-void ili9341_set_driver_timing_control_b()
+/* ILI9341 Regulative Registers Access -------------------------------------------------------------------------------------------*/
+/* 8.2.1. NOP (00h) */
+void ili9341_nop()
 {
 
-  uint8_t p_param[2] = {0x00, 0x00};
-  bus_8080_write_register(0xEA, p_param, 2);
 }
-
-void ili9341_set_poweron_sequence_control_b()
+/* 8.2.2. Software Reset (01h) */ 
+void ili9341_soft_reset()
 {
-  uint8_t p_param[4] = {0x64, 0x03, 0x12, 0x81};
-  bus_8080_write_register(0xED, p_param, 4);
-}
 
-/**/
-void ili9341_set_pump_ratio_control()
+}
+/* 8.2.3. Read display identification information (04h) */ 
+void ili9341_read_display_identification(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x20};
-  bus_8080_write_register(0xF7, p_param, 1);
-}
 
-void ili9341_set_power_control1()
+}
+/* 8.2.4. Read Display Status (09h) */ 
+void ili9341_read_display_status(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x23};
-  bus_8080_write_register(0xC0, p_param, 1);
-}
 
-void ili9341_set_power_control2()
+}
+/* 8.2.5. Read Display Power Mode (0Ah) */ 
+void ili9341_read_display_power_mode(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x10};
-  bus_8080_write_register(0xC1, p_param, 1);
+
 }
-
-
-void ili9341_set_vcom_control1()
+/* 8.2.6. Read Display MADCTL (0Bh) */ 
+void ili9341_read_display_MADCTL(uint8_t* p_read_data)
 {
-  uint8_t p_param[2] = {0x3E, 0x28};
-  bus_8080_write_register(0xC5, p_param, 2);
-}
 
-void ili9341_set_vcom_control2()
+}
+/* 8.2.7. Read Display Pixel Format (0Ch) */ 
+void ili9341_read_display_pixel_format(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x86};
-  bus_8080_write_register(0xC7, p_param, 1);
-}
 
-void ili9341_set_memory_access_control()
+}
+/* 8.2.8. Read Display Image Format (0Dh) */ 
+void ili9341_read_display_image_format(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x08};
-  bus_8080_write_register(0x36, p_param, 1);
-}
 
-void ili9341_set_pixel_format_set()
+}
+/* 8.2.9. Read Display Signal Mode (0Eh) */ 
+void ili9341_read_display_signal_mode(uint8_t* p_read_data)
 {
-  uint8_t p_param[1] = {0x55};
-  bus_8080_write_register(0x3A, p_param, 1);
-}
 
-void ili9341_set_frame_rate_control()
+}
+/* 8.2.10. Read Display Self-Diagnostic Result (0Fh) */ 
+void ili9341_read_display_diagnostic_result(uint8_t* p_read_data)
 {
-  uint8_t p_param[2] = {0x00, 0x10};
-  bus_8080_write_register(0xB1, p_param, 2);
+
 }
 
-void ili9341_set_display_function_control()
+/* 8.2.11. Enter Sleep Mode (10h) */ 
+void ili9341_enter_sleep_mode() 
 {
-  uint8_t p_param[3] = {0x08, 0x82, 0x27};
-  bus_8080_write_register(0xB6, p_param, 3);
-}
 
+}
+/* 8.2.12. Sleep Out (11h) */ 
 void ili9341_exit_sleep_mode()
 {
   bus_8080_write_register(0x11, NULL, 0);
   HAL_Delay(120);             //必须120ms的延迟
 }
 
+/* 8.2.13. Partial Mode ON (12h)*/ 
+void ili9341_partial_mode_on()
+{
 
+}
+/* 8.2.14. Normal Display Mode ON (13h)*/ 
+void ili9341_normal_mode_on()
+{
+
+}
+/* 8.2.15. Display Inversion OFF (20h)*/ 
+void ili9341_display_inversion_off()
+{
+
+}
+/* 8.2.15. Display Inversion OFF (20h) */ 
+void ili9341_display_inversion_on()
+{
+
+}
+/* 8.2.17. Gamma Set (26h) */ 
+void ili9341_set_gamma()
+{
+
+}
+
+/* 8.2.18. Display OFF (28h) */ 
 /** 
   * @brief  ILI9341 enters DISPLAY OFF mode. 
   *         Output of Frame Memory is disabled and blank paged is inserted. 
@@ -436,6 +436,7 @@ void ili9341_set_display_off()
   bus_8080_write_register(0x28, NULL, 0);
 }
 
+/* 8.2.19. Display ON (29h) */ 
 /** 
   * @brief  ILI9341 enters DISPLAY ON mode. 
   *         This command recovers the IC from DISPLAY OFF mode.
@@ -449,22 +450,284 @@ void ili9341_set_display_on()
   bus_8080_write_register(0x29, NULL, 0);
 }
 
+/* 8.2.20. Column Address Set (2Ah) */ 
+void ili9341_set_column_address(uint16_t x1, uint16_t x2)
+{
 
+  uint8_t p_param[4] = { (uint8_t)(x1 >> 8), (uint8_t)x1, (uint8_t)(x2 >> 8), (uint8_t)x2};
+  bus_8080_write_register(0x2A, p_param, 4);
+}
+
+/* 8.2.21. Page Address Set (2Bh) */ 
+void ili9341_set_page_address(uint16_t y1, uint16_t y2)
+{
+
+  uint8_t p_param[4] = { (uint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
+  bus_8080_write_register(0x2B, p_param, 4);
+}
+
+/* 8.2.22. Memory Write (2Ch) */ 
 void ili9341_memory_write()
 {
   bus_8080_write_register(0x2C, NULL, 0);
 }
 
-void ili9341_hard_reset() 
+/* 8.2.23. Color Set (2Dh) */ 
+void ili9341_set_color()
 {
-  LCD_RST_1();
-  HAL_Delay(1);
-  LCD_RST_0();
-  HAL_Delay(1);
-  LCD_RST_1();
-  HAL_Delay(1);
+
+}
+/* 8.2.24. Memory Read (2Eh) */ 
+void ili9341_memory_read()
+{
+
+}
+/* 8.2.25. Partial Area (30h) */ 
+void ili9341_partial_area()
+{
+
+}
+/* 8.2.26. Vertical Scrolling Definition (33h) */ 
+void ili9341_vertical_scrolling_definition()
+{
+
+}
+/* 8.2.27. Tearing Effect Line OFF (34h) */ 
+void ili9341_tearing_effect_line_off()
+{
+
+}
+/* 8.2.28. Tearing Effect Line ON (35h) */ 
+void ili9341_tearing_effect_line_on()
+{
+
+}
+/* 8.2.29. Memory Access Control (36h) */
+void ili9341_set_memory_access_control()
+{
+  uint8_t p_param[1] = {0x08};
+  bus_8080_write_register(0x36, p_param, 1);
 }
 
+/* 8.2.30. Vertical Scrolling Start Address (37h) */
+void ili9341_vertical_scrolling_start_address()
+{
+
+}
+/* 8.2.31. Idle Mode OFF (38h) */
+void ili9341_idle_mode_off()
+{
+
+}
+/* 8.2.32. Idle Mode ON (39h) */
+void ili9341_idle_mode_on()
+{
+
+}
+/* 8.2.33. COLMOD: Pixel Format Set (3Ah) */
+void ili9341_set_pixel_format_set()
+{
+  uint8_t p_param[1] = {0x55};
+  bus_8080_write_register(0x3A, p_param, 1);
+}
+
+/* 8.2.34. Write_Memory_Continue (3Ch) */
+void ili9341_write_memory_continue()
+{
+
+}
+/* 8.2.35. Read_Memory_Continue (3Eh)*/ 
+void ili9341_read_memory_continue()
+{
+
+}
+/* 8.2.36. Set_Tear_Scanline (44h)*/ 
+void ili9341_set_tear_scanline()
+{
+
+}
+/* 8.2.37. Get_Scanline (45h) */ 
+void ili9341_get_scanline()
+{
+
+}
+/* 8.2.38. Write Display Brightness (51h) */ 
+void ili9341_set_display_brightness()
+{
+
+}
+/* 8.2.39. Read Display Brightness (52h) */ 
+void ili9341_get_display_brightness()
+{
+
+}
+/* 8.2.40. Write CTRL Display (53h) */ 
+void ili9341_set_CTRL_display()
+{
+
+}
+/* 8.2.41. Read CTRL Display (54h) */ 
+void ili9341_get_CTRL_display()
+{
+
+}
+/* 8.2.42. Write Content Adaptive Brightness Control (55h) */ 
+void ili9341_set_content_adaptive_brightness_control()
+{
+
+}
+/* 8.2.43. Read Content Adaptive Brightness Control (56h) */ 
+void ili9341_get_content_adaptive_brightness_control()
+{
+
+}
+/* 8.2.44. Write CABC Minimum Brightness (5Eh) */ 
+void ili9341_set_CABC_minimum_brightness()
+{
+
+}
+/* 8.2.45. Read CABC Minimum Brightness (5Fh) */ 
+void ili9341_get_CABC_minimum_brightness()
+{
+
+}
+/* 8.2.46. Read ID1 (DAh) */ 
+void ili9341_read_id1()
+{
+
+}
+/* 8.2.47. Read ID2 (DBh) */ 
+void ili9341_read_id2()
+{
+
+}
+/* 8.2.48. Read ID3 (DCh) */ 
+void ili9341_read_id3()
+{
+
+}
+
+
+/* ILI9341 Extended Registers Access -------------------------------------------------------------------------------------------*/
+/* 8.3.1. RGB Interface Signal Control (B0h) */
+void ili9341_rgb_interface_signal_control()
+{
+
+}
+/* 8.3.2. Frame Rate Control (In Normal Mode/Full Colors) (B1h) */
+void ili9341_frame_control_normal_mode()
+{
+
+}
+/* 8.3.3. Frame Rate Control (In Idle Mode/8 colors) (B2h) */
+void ili9341_frame_control_idle_mode()
+{
+
+}
+/* 8.3.4. Frame Rate control (In Partial Mode/Full Colors) (B3h) */
+void ili9341_frame_control_partial_mode()
+{
+
+}
+/* 8.3.5. Display Inversion Control (B4h) */
+void ili9341_display_inversion_control()
+{
+
+}
+/* 8.3.6. Blanking Porch Control (B5h) */
+void ili9341_blanking_porch_control()
+{
+
+}
+/* 8.3.7. Display Function Control (B6h) */
+void ili9341_display_function_control()
+{
+
+}
+/* 8.3.8. Entry Mode Set (B7h) */
+void ili9341_entry_mode_set()
+{
+
+}
+/* 8.3.9. Backlight Control 1 (B8h) */
+void ili9341_backlight_control_1()
+{
+
+}
+/* 8.3.10. Backlight Control 2 (B9h) */
+void ili9341_backlight_control_2()
+{
+
+}
+/* 8.3.11. Backlight Control 3 (BAh) */
+void ili9341_backlight_control_3()
+{
+
+}
+/* 8.3.12. Backlight Control 4 (BBh) */
+void ili9341_backlight_control_4()
+{
+
+}
+/* 8.3.13. Backlight Control 5 (BCh) */
+void ili9341_backlight_control_5()
+{
+
+}
+/* 8.3.14. Backlight Control 7 (BEh) */
+void ili9341_backlight_control_7()
+{
+
+}
+/* 8.3.15. Backlight Control 8 (BFh)*/
+void ili9341_backlight_control_8()
+{
+
+}
+/* 8.3.16. Power Control 1 (C0h) */ 
+void ili9341_set_power_control1()
+{
+  uint8_t p_param[1] = {0x23};
+  bus_8080_write_register(0xC0, p_param, 1);
+}
+
+/* 8.3.17. Power Control 2 (C1h) */ 
+void ili9341_set_power_control2()
+{
+  uint8_t p_param[1] = {0x10};
+  bus_8080_write_register(0xC1, p_param, 1);
+}
+
+/* 8.3.18. VCOM Control 1(C5h) */ 
+void ili9341_set_vcom_control1()
+{
+  uint8_t p_param[2] = {0x3E, 0x28};
+  bus_8080_write_register(0xC5, p_param, 2);
+}
+
+/* 8.3.19. VCOM Control 2(C7h) */ 
+void ili9341_set_vcom_control2()
+{
+  uint8_t p_param[1] = {0x86};
+  bus_8080_write_register(0xC7, p_param, 1);
+}
+
+/* 8.3.20. NV Memory Write (D0h) */ 
+void ili9341_nv_memory_write()
+{
+
+}
+/* 8.3.21. NV Memory Protection Key (D1h) */
+void ili9341_nv_memory_protection_key()
+{
+
+}
+/* 8.3.22. NV Memory Status Read (D2h) */
+void ili9341_nv_memory_status_read()
+{
+
+}
+/* 8.3.23. Read ID4 (D3h) */
 /**
 	* @brief Read LCD Controller Chip (ILI9341) ID. 
 	* @note  It has been tested that some display modules has all manufacturer/version set to 0.
@@ -481,6 +744,141 @@ void ili9341_get_id4(uint8_t* p_read_data)
 	sprintf(msg, "ILI9341 IC Version: %d \nIC Model: 0x%02x%02x\n", p_read_data[1], p_read_data[2], p_read_data[3]); /* id4[0] is dummy byte. */
 	serial_print(msg);
 }
+
+/* 8.3.24. Positive Gamma Correction (E0h) */
+void ili9341_positive_gamma_correction()
+{
+
+}
+/* 8.3.25. Negative Gamma Correction (E1h) */
+void ili9341_negative_gamma_correction()
+{
+
+}
+/* 8.3.26. Digital Gamma Control 1 (E2h) */
+void ili9341_digital_gamma_control_1()
+{
+
+}
+/* 8.3.27. Digital Gamma Control 2(E3h) */
+void ili9341_digital_gamma_control_2()
+{
+
+}
+/* 8.3.28. Interface Control (F6h)  */
+void ili9341_interface_control()
+{
+
+}
+
+/* 8.4.1 Power control A (CBh) */
+/** 
+  * @brief Set Power Control A. 
+  */
+void ili9341_set_power_control_a()
+{
+  /* Vcore = 1.6V DDVDH = 5.6V. */
+  uint8_t p_param[5] = {0x39, 0x2C, 0x00, 0x34, 0x02};
+  bus_8080_write_register(0xCB, p_param, 5);
+}
+
+/* 8.4.2 Power control B (CFh) */ 
+void ili9341_set_power_control_b()
+{
+  uint8_t p_param[3] = {0x00, 0xC1, 0x30};
+  bus_8080_write_register(0xCF, p_param, 3);
+}
+
+/* 8.4.3 Driver timing control A (E8h) */ 
+void ili9341_set_driver_timing_control_a()
+{
+  uint8_t p_param[3] = {0x85, 0x00, 0x78};
+  bus_8080_write_register(0xE8, p_param, 3);
+}
+
+
+/* 8.4.5 Driver timing control B (EAh) */ 
+void ili9341_set_driver_timing_control_b()
+{
+
+  uint8_t p_param[2] = {0x00, 0x00};
+  bus_8080_write_register(0xEA, p_param, 2);
+}
+
+/* 8.4.6 Power on sequence control (EDh) */ 
+void ili9341_set_poweron_sequence_control()
+{
+
+}
+/* 8.4.7 Enable 3G (F2h) */
+void ili9341_enable_3G()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ili9341_set_frame_rate_control()
+{
+  uint8_t p_param[2] = {0x00, 0x10};
+  bus_8080_write_register(0xB1, p_param, 2);
+}
+
+void ili9341_set_display_function_control()
+{
+  uint8_t p_param[3] = {0x08, 0x82, 0x27};
+  bus_8080_write_register(0xB6, p_param, 3);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ili9341_set_poweron_sequence_control_b()
+{
+  uint8_t p_param[4] = {0x64, 0x03, 0x12, 0x81};
+  bus_8080_write_register(0xED, p_param, 4);
+}
+
+/**/
+void ili9341_set_pump_ratio_control()
+{
+  uint8_t p_param[1] = {0x20};
+  bus_8080_write_register(0xF7, p_param, 1);
+}
+
+
 
 
 void ili9341_init()
@@ -507,19 +905,8 @@ void ili9341_init()
 
 
 
-void ili9341_set_column_address(uint16_t x1, uint16_t x2)
-{
 
-  uint8_t p_param[4] = { (uint8_t)(x1 >> 8), (uint8_t)x1, (uint8_t)(x2 >> 8), (uint8_t)x2};
-  bus_8080_write_register(0x2A, p_param, 4);
-}
 
-void ili9341_set_page_address(uint16_t y1, uint16_t y2)
-{
-
-  uint8_t p_param[4] = { (uint8_t)(y1 >> 8), (uint8_t)y1, (uint8_t)(y2 >> 8), (uint8_t)y2};
-  bus_8080_write_register(0x2B, p_param, 4);
-}
 
 
 /**

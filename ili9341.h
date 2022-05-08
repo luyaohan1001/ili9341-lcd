@@ -314,6 +314,8 @@ void bus_8080_read_data(uint8_t* p_read_data, uint8_t length);
 
 
 
+void ili9341_hard_reset();
+
 /* ILI9341 Regulative Registers Access -------------------------------------------------------------------------------------------*/
 /* 8.2.1. NOP (00h) */
 void ili9341_nop();
@@ -349,7 +351,7 @@ void ili9341_display_inversion_off();
 /* 8.2.15. Display Inversion OFF (20h) */ 
 void ili9341_display_inversion_on();
 /* 8.2.17. Gamma Set (26h) */ 
-void ili9341_gamma_set();
+void ili9341_set_gamma();
 /* 8.2.18. Display OFF (28h) */ 
 void ili9341_set_display_off();
 /* 8.2.19. Display ON (29h) */ 
@@ -445,17 +447,14 @@ void ili9341_backlight_control_5();
 void ili9341_backlight_control_7();
 /* 8.3.15. Backlight Control 8 (BFh)*/
 void ili9341_backlight_control_8();
-
 /* 8.3.16. Power Control 1 (C0h) */ 
 void ili9341_set_power_control1();
 /* 8.3.17. Power Control 2 (C1h) */ 
 void ili9341_set_power_control2();
-
 /* 8.3.18. VCOM Control 1(C5h) */ 
 void ili9341_set_vcom_control1();
 /* 8.3.19. VCOM Control 2(C7h) */ 
 void ili9341_set_vcom_control2();
-
 
 /* 8.3.20. NV Memory Write (D0h) */ 
 void ili9341_nv_memory_write();
@@ -491,30 +490,12 @@ void ili9341_enable_3G();
 
 
 
-/* */ 
-void ili9341_set_pump_ratio_control();
-
-/* */ 
-void ili9341_hard_reset();
-/* */ 
-
-
-
-
-/* */ 
-void ili9341_memory_write();
-/* */ 
-void ili9341_init();
-
-/* */ 
-void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2);
-
-
-
-
 
 
 /* Abstraction Layer: LCD Drawing / Plotting Methods ------------------------------------------------------------*/
+void ili9341_init();
+void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2);
+
 void lcd_draw_horizontal_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t color);
 void lcd_draw_vertical_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t line_color);
 void lcd_draw_rectangle_unfilled(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t rect_width, uint16_t rect_height, uint16_t frame_color);
