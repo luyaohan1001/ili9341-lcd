@@ -14,6 +14,7 @@
 
 /* Includes --------------------------------------------------------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "colors.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -21,8 +22,8 @@
 extern UART_HandleTypeDef huart2;
 
 /* TFT Screen Dimension --------------------------------------------------------------------------------------------------------*/
-#define TFT_PIXEL_H_LENGTH 320
-#define TFT_PIXEL_V_WIDTH  240
+#define TFT_PIXEL_H_LENGTH 240
+#define TFT_PIXEL_V_WIDTH  320
 
 static const unsigned char font[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00,
@@ -380,9 +381,9 @@ void ili9341_set_tearing_effect_line_off();
 /* 8.2.28. Tearing Effect Line ON (35h) */ 
 void ili9341_set_tearing_effect_line_on();
 /* 8.2.29. Memory Access Control (36h) */
-void ili9341_set_memory_access_control();
+void ili9341_set_memory_access_control(uint8_t setval);
 /* 8.2.30. Vertical Scrolling Start Address (37h) */
-void ili9341_vertical_scrolling_start_address();
+void ili9341_vertical_scrolling_start_address(uint16_t VSP);
 /* 8.2.31. Idle Mode OFF (38h) */
 void ili9341_set_idle_mode_off();
 /* 8.2.32. Idle Mode ON (39h) */
@@ -510,6 +511,8 @@ void lcd_plot_char(int16_t x, int16_t y, unsigned char c,uint16_t color, uint16_
 void lcd_draw_dot(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t dot_color);
 void lcd_set_rotation(uint8_t orientation);
 void lcd_write_message(char* message, uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint8_t size, uint16_t text_color, uint16_t text_bg_color);
+void lcd_enter_vertical_scroll_mode();
+void lcd_continuous_scroll();
 
 
 #endif

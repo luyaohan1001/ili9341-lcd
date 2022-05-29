@@ -11,6 +11,7 @@
 /* Includes ---------------------------------------------------------------------------------------------------------------------------------------*/
 #include "ili9341.h"
 
+
 /* Macros -----------------------------------------------------------------------------------------------------------------------------------------*/
 #define ILI9341_DEBUG /* When defined, debug messages are logged through serial_print(). */
 
@@ -784,21 +785,22 @@ void ili9341_set_tearing_effect_line_on()
   * @param  None.
   * @retval None.
   */
-void ili9341_set_memory_access_control()
+void ili9341_set_memory_access_control(uint8_t val)
 {
-  uint8_t p_param[1] = {0x08};
+  uint8_t p_param[1] = {val};
   bus_8080_write_register(0x36, 1, p_param);
 }
 
 
 /** 
   * @brief  8.2.30. Vertical Scrolling Start Address (37h)
-  * @param  None.
+  * @param  VSP Vertical Start Position.
   * @retval None.
   */
-void ili9341_vertical_scrolling_start_address()
+void ili9341_vertical_scrolling_start_address(uint16_t VSP)
 {
-
+  uint8_t p_param[2] = {(uint8_t)VSP >> 8, VSP & 0xFF};
+  bus_8080_write_register(0x37, 2, p_param);
 }
 
 /**
@@ -1270,7 +1272,7 @@ void ili9341_init()
   ili9341_set_power_control2();
   ili9341_set_vcom_control1();
   ili9341_set_vcom_control2();
-  ili9341_set_memory_access_control();
+  ili9341_set_memory_access_control(0x08);
   ili9341_set_pixel_format_set();
   ili9341_set_frame_rate_control();
   ili9341_set_display_function_control();
@@ -1295,7 +1297,7 @@ void ili9341_set_frame_address(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
   */
 void lcd_draw_horizontal_line(uint16_t start_coordinate_x, uint16_t start_coordinate_y, uint16_t length, uint16_t line_color)                   
 { 
-  bus_8080_write_command(0x2C);       //write_memory_start
+  ili9341_memory_write();
   uint16_t end_coordinate_x = start_coordinate_x + length;
   uint16_t end_coordinate_y = start_coordinate_y;
 
@@ -1437,19 +1439,19 @@ void lcd_set_rotation(uint8_t orientation)
   switch (orientation) 
   {
     case 0:
-      *p_param = 0x40 | 0x08;
+      *p_param = 0x40 | 0x08; // MX BGR
       bus_8080_write_register(0x36, 1, p_param);
       break;
     case 1:
-      *p_param = 0x20 | 0x08;
+      *p_param = 0x20 | 0x08; // MV BGR
       bus_8080_write_register(0x36, 1, p_param);
       break;
     case 2:
-      *p_param = 0x80 | 0x08;
+      *p_param = 0x80 | 0x08; // MY BGR
       bus_8080_write_register(0x36, 1, p_param);
       break;
     case 3:
-      *p_param = 0x40 | 0x80 | 0x20 | 0x08;
+      *p_param = 0x40 | 0x80 | 0x20 | 0x08; // MY MX MV BGR 
       bus_8080_write_register(0x36, 1, p_param);
       break;
   }
@@ -1462,4 +1464,46 @@ void lcd_write_message(char* message, uint16_t start_coordinate_x, uint16_t star
     lcd_plot_char(start_coordinate_x, start_coordinate_y, single_char, text_color, text_bg_color, 1);
     start_coordinate_x += 6;
   }
+}
+
+/**
+  * @brief  Scroll the current display vertically.
+  * @note   The screen only supports "vertical scrolling", that means it has following effect:
+  *         Before scrolling: 
+  *         --------------------------------
+  *         -                              -
+  *         -    |                         -
+  *         -    |                         -
+  *         -    |----------               -  
+  *         -    |                         -
+  *         -    |                         -
+  *         -                              -
+  *         --------------------------------
+  * 
+  *         After scrolling: 
+  *         --------------------------------
+  *         -                              -
+  *         -          |                   -
+  *         -          |                   -
+  *         -          |----------         -  
+  *         -          |                   -
+  *         -          |                   -
+  *         -                              -
+  *         --------------------------------
+  * 
+  *         It is called "vertical" because it scrolls in the vertical placement of the screen.
+  */
+void lcd_enter_vertical_scroll_mode()
+{
+  ili9341_vertical_scrolling_start_address(100);  // 0x37
+}
+
+
+void lcd_continuous_scroll() 
+{
+  ili9341_set_column_address(0, 0);
+  ili9341_set_page_address(0, 0);
+
+  ili9341_memory_write(); // 0x2C
+  bus_8080_write_command(0x37);
 }
